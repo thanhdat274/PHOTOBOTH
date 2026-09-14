@@ -48,17 +48,17 @@ const layoutsConfig = [
 ];
 
 const framesConfig = [
-  { id: 'ai-trung-thu', label: 'AI Trung Thu 🌕', category: 'vietnam', color: '#112A50', textLight: true, hasGraphics: true, artwork: 'assets/frames/trung-thu.png' },
-  { id: 'ai-graduation', label: 'AI Tốt Nghiệp 🎓', category: 'event', color: '#063A7A', textLight: true, hasGraphics: true, artwork: 'assets/frames/graduation.png' },
-  { id: 'ai-womens-day', label: 'AI 8 Tháng 3 🌸', category: 'event', color: '#EBA1A9', hasGraphics: true, artwork: 'assets/frames/womens-day.png' },
-  { id: 'ai-tet-an-vui', label: 'AI Tết An Vui 🏮', category: 'vietnam', color: '#A71916', textLight: true, hasGraphics: true, artwork: 'assets/frames/tet-an-vui.png' },
-  { id: 'ai-hoi-an', label: 'AI Hội An Lantern 🏮', category: 'vietnam', color: '#B66D10', hasGraphics: true, artwork: 'assets/frames/hoi-an-lantern.png' },
-  { id: 'ai-scrapbook', label: 'AI Good Times 📒', category: 'pinterest', color: '#4B9DB0', hasGraphics: true, artwork: 'assets/frames/scrapbook-good-times.png' },
+  { id: 'ai-trung-thu', label: 'AI Trung Thu 🌕', category: 'vietnam', color: '#112A50', textLight: true, hasGraphics: true, artwork: 'assets/frames/trung-thu.png', layouts: ['4'] },
+  { id: 'ai-graduation', label: 'AI Tốt Nghiệp 🎓', category: 'event', color: '#063A7A', textLight: true, hasGraphics: true, artwork: 'assets/frames/graduation.png', layouts: ['4'] },
+  { id: 'ai-womens-day', label: 'AI 8 Tháng 3 🌸', category: 'event', color: '#EBA1A9', hasGraphics: true, artwork: 'assets/frames/womens-day.png', layouts: ['4'] },
+  { id: 'ai-tet-an-vui', label: 'AI Tết An Vui 🏮', category: 'vietnam', color: '#A71916', textLight: true, hasGraphics: true, artwork: 'assets/frames/tet-an-vui.png', layouts: ['4'] },
+  { id: 'ai-hoi-an', label: 'AI Hội An Lantern 🏮', category: 'vietnam', color: '#B66D10', hasGraphics: true, artwork: 'assets/frames/hoi-an-lantern.png', layouts: ['4'] },
+  { id: 'ai-scrapbook', label: 'AI Good Times 📒', category: 'pinterest', color: '#4B9DB0', hasGraphics: true, artwork: 'assets/frames/scrapbook-good-times.png', layouts: ['4'] },
   // ORIGINAL AI ARTWORK — optimized for the 4-photo 2x6 strip
-  { id: 'ai-birthday-cherry', label: 'AI Birthday Cherry 🍒', category: 'ai-art', color: '#F58BA5', hasGraphics: true, artwork: 'assets/frames/birthday-cherry.png' },
-  { id: 'ai-couple-rose', label: 'AI Love Letter 🌹', category: 'ai-art', color: '#661A1D', textLight: true, hasGraphics: true, artwork: 'assets/frames/couple-rose.png' },
-  { id: 'ai-wedding-gold', label: 'AI Our Forever ✦', category: 'ai-art', color: '#D3B36A', hasGraphics: true, artwork: 'assets/frames/wedding-gold.png' },
-  { id: 'ai-kpop-neon', label: 'AI Main Character ✨', category: 'ai-art', color: '#AF3BEE', textLight: true, hasGraphics: true, artwork: 'assets/frames/kpop-neon.png' },
+  { id: 'ai-birthday-cherry', label: 'AI Birthday Cherry 🍒', category: 'ai-art', color: '#F58BA5', hasGraphics: true, artwork: 'assets/frames/birthday-cherry.png', layouts: ['4'] },
+  { id: 'ai-couple-rose', label: 'AI Love Letter 🌹', category: 'ai-art', color: '#661A1D', textLight: true, hasGraphics: true, artwork: 'assets/frames/couple-rose.png', layouts: ['4'] },
+  { id: 'ai-wedding-gold', label: 'AI Our Forever ✦', category: 'ai-art', color: '#D3B36A', hasGraphics: true, artwork: 'assets/frames/wedding-gold.png', layouts: ['4'] },
+  { id: 'ai-kpop-neon', label: 'AI Main Character ✨', category: 'ai-art', color: '#AF3BEE', textLight: true, hasGraphics: true, artwork: 'assets/frames/kpop-neon.png', layouts: ['4'] },
   // 0. PINTEREST TRENDING GRAPHIC FRAMES 🌟 (Nơ Coquette, Scrapbook Washi, Vé máy bay, Chibi Bear, Phim cổ)
   { id: 'pin-coquette-bow', label: 'Coquette Ribbon 🎀', category: 'pinterest', color: '#FFF0F5', hasGraphics: true },
   { id: 'pin-scrapbook-washi', label: 'Washi Scrapbook 📑', category: 'pinterest', color: '#FDFBF7', hasGraphics: true },
@@ -742,7 +742,7 @@ function updateStripPreview() {
     stripPreview.style.setProperty('background-size', 'cover', 'important');
     stripPreview.style.setProperty('background-position', 'center', 'important');
   }
-  if (frameCfg && frameCfg.artwork) {
+  if (frameCfg && frameCfg.artwork && (!frameCfg.layouts || frameCfg.layouts.includes(state.layout))) {
     stripPreview.style.setProperty('background-image', `url('${frameCfg.artwork}')`, 'important');
     stripPreview.style.setProperty('background-size', 'cover', 'important');
     stripPreview.style.setProperty('background-position', 'center', 'important');
@@ -1699,6 +1699,11 @@ function setupEventListeners() {
     const btn = e.target.closest('[data-layout]');
     if (!btn || state.busy) return;
     state.layout = btn.dataset.layout;
+    const currentFrame = framesConfig.find(f => f.id === state.frame);
+    if (currentFrame && currentFrame.layouts && !currentFrame.layouts.includes(state.layout)) {
+      state.frame = 'photoism-navy';
+      renderFramePicker();
+    }
     renderLayoutPicker();
     syncSlotAssignments();
   });
@@ -1715,6 +1720,12 @@ function setupEventListeners() {
     const swatch = e.target.closest('[data-frame]');
     if (!swatch) return;
     state.frame = swatch.dataset.frame;
+    const selectedFrame = framesConfig.find(f => f.id === state.frame);
+    if (selectedFrame && selectedFrame.layouts && !selectedFrame.layouts.includes(state.layout)) {
+      state.layout = selectedFrame.layouts[0];
+      renderLayoutPicker();
+      syncSlotAssignments();
+    }
     document.querySelectorAll('#framePicker .frame-swatch').forEach(s => s.classList.toggle('active', s === swatch));
     
     // Trigger quick tactile visual feedback on preview

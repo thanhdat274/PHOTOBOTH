@@ -25,6 +25,12 @@
 .frame-ai-graduation{background-image:url('assets/frames/graduation.png')!important;background-size:cover!important;background-position:center!important}
 .frame-ai-womens-day{background-image:url('assets/frames/womens-day.png')!important;background-size:cover!important;background-position:center!important}
 
+/* The AI artwork is a precision 4-cut template. Its internal photo grid matches the painted windows. */
+.strip.ai-artwork-frame.layout-4{width:210px;padding:45px 28px 70px;gap:3px;background-repeat:no-repeat!important}
+.strip.ai-artwork-frame.layout-4 .strip-header,.strip.ai-artwork-frame.layout-4 .strip-footer{visibility:hidden;height:12px;padding:0;margin:0}
+.strip.ai-artwork-frame.layout-4 .strip-photos{gap:8px}
+.strip.ai-artwork-frame.layout-4 .strip-slot{border-radius:6px;box-shadow:none;aspect-ratio:1.33}
+
 * {
   box-sizing: border-box;
   margin: 0;
