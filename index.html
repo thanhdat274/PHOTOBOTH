@@ -3,13 +3,13 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#ff4365" />
+    <meta name="theme-color" content="#181424" />
     <title>Snapbox Studio — Korean Photobooth (Photoism & Life 4 Cuts)</title>
     
     <!-- Google Fonts: Plus Jakarta Sans & DM Mono -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@1,600&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
 
     <!-- Tailwind CSS (CDN) -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -18,18 +18,14 @@
         theme: {
           extend: {
             colors: {
-              brand: {
-                50: '#fff1f3',
-                100: '#ffe4e8',
-                200: '#fecd5',
-                400: '#fb7185',
-                500: '#ff4365',
-                600: '#e11d48',
-                700: '#be123c',
-              },
-              dark: {
-                800: '#1e192b',
-                900: '#141021',
+              studio: {
+                bg: '#F9F6F0',
+                surface: '#FFFFFF',
+                dark: '#16131F',
+                border: '#EAE3D9',
+                pink: '#FF416C',
+                pinkLight: '#FFF0F3',
+                purple: '#795290'
               }
             },
             fontFamily: {
@@ -51,348 +47,459 @@
     <!-- QR Code Library -->
     <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js" crossorigin="anonymous"></script>
 
-    <!-- Custom Studio Styles -->
     <link rel="stylesheet" href="style.css" />
   </head>
-  <body class="bg-[#faf6f0] text-[#1e192b] font-sans min-h-screen selection:bg-brand-500 selection:text-white">
-    <!-- Ambient Background Glow Orbs -->
-    <div class="fixed inset-0 pointer-events-none overflow-hidden z-0">
-      <div class="absolute -top-40 -left-40 w-96 h-96 bg-rose-200/50 rounded-full blur-3xl"></div>
-      <div class="absolute top-1/3 -right-40 w-96 h-96 bg-purple-200/40 rounded-full blur-3xl"></div>
-      <div class="absolute -bottom-40 left-1/3 w-96 h-96 bg-amber-100/60 rounded-full blur-3xl"></div>
-    </div>
-
-    <main class="app-shell relative z-10">
-      <!-- HEADER -->
-      <header class="topbar">
-        <div class="brand-group">
-          <a class="brand group" href="#">
-            snap<span class="text-brand-500 transition-colors group-hover:text-brand-600">box</span>
-            <small class="brand-badge">✦ STUDIO</small>
+  <body class="bg-studio-bg text-studio-dark font-sans min-h-screen selection:bg-rose-500 selection:text-white antialiased">
+    
+    <!-- HEADER BAR: Tinh tế, tối giản chuẩn phong cách Seoul -->
+    <header class="studio-header">
+      <div class="header-container">
+        <div class="logo-area">
+          <a href="#" class="studio-brand">
+            snap<span class="text-studio-pink">box</span>
+            <span class="studio-tag">STUDIO</span>
           </a>
-          <span class="brand-sub">LIFE 4 CUTS • PHOTOISM EXPERIENCE</span>
+          <span class="studio-slogan">PHOTOISM & LIFE 4 CUTS EXPERIENCE</span>
         </div>
-        <div class="topbar-actions">
-          <button id="soundToggleBtn" class="pill-btn active" title="Bật/Tắt âm thanh phòng chụp">
+
+        <div class="header-tools">
+          <button id="soundToggleBtn" class="header-pill-btn active" title="Bật/Tắt âm thanh">
             <i data-lucide="volume-2" class="w-4 h-4"></i>
-            <span>Âm thanh: Bật</span>
+            <span>Âm thanh</span>
           </button>
-          <button id="clearAllBtn" class="pill-btn warning" title="Xóa toàn bộ ảnh để chụp mới từ đầu">
+          <button id="clearAllBtn" class="header-pill-btn text-rose-600 hover:bg-rose-50" title="Xóa toàn bộ ảnh và chụp lại từ đầu">
             <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
-            <span>Chụp mới từ đầu</span>
+            <span>Chụp mới ↺</span>
           </button>
         </div>
-      </header>
+      </div>
+    </header>
 
-      <!-- BOOTH THREE-COLUMN WORKSPACE -->
-      <section class="booth">
-        <!-- CỘT 1: CONTROLS & SETTINGS -->
-        <aside class="controls panel">
-          <!-- 01 BỐ CỤC KHUNG -->
-          <div class="control-section">
-            <div class="step-label">
-              <span class="step-num">01</span>
-              <span>BỐ CỤC KHUNG ẢNH</span>
-            </div>
-            <div class="layout-picker" id="layoutPicker"></div>
-          </div>
-
-          <!-- 02 KHUNG ẢNH -->
-          <div class="control-section">
-            <div class="step-header">
-              <div class="step-label">
-                <span class="step-num">02</span>
-                <span>KHUNG ẢNH</span>
-              </div>
-              <label class="upload-frame-btn" for="customFrameInput" title="Tải khung PNG riêng từ mạng/Canva/AI">
-                <i data-lucide="image-plus" class="w-3.5 h-3.5"></i>
-                <span>+ Khung riêng</span>
-                <input type="file" id="customFrameInput" accept="image/png,image/webp" />
-              </label>
-            </div>
-
-            <div class="frame-tabs" role="tablist">
-              <button class="active" data-category="all">Tất cả</button>
-              <button data-category="cute">Y2K / Cute</button>
-              <button data-category="film">Film 90s</button>
-              <button data-category="aesthetic">Pastel</button>
-              <button data-category="event">Kỷ niệm</button>
-              <button data-category="kpop">K-Pop</button>
-            </div>
-            <div class="swatches frame-library" id="framePicker"></div>
-          </div>
-
-          <!-- 03 BỘ LỌC MÀU -->
-          <div class="control-section">
-            <div class="step-label">
-              <span class="step-num">03</span>
-              <span>BỘ LỌC MÀU (K-FILTERS)</span>
-            </div>
-            <div class="filter-picker" id="filterPicker">
-              <button class="filter-btn active" data-filter="none">Tự nhiên</button>
-              <button class="filter-btn" data-filter="k-beauty">✨ K-Beauty</button>
-              <button class="filter-btn" data-filter="vintage">🎞 Film 90s</button>
-              <button class="filter-btn" data-filter="bw">🖤 Noir B&W</button>
-              <button class="filter-btn" data-filter="warm">🍑 Warm Peach</button>
-              <button class="filter-btn" data-filter="cyber">💜 Cyberpunk</button>
-            </div>
-          </div>
-
-          <!-- 04 TÁCH NỀN AI -->
-          <div class="control-section">
-            <div class="step-header">
-              <div class="step-label">
-                <span class="step-num">04</span>
-                <span>TÁCH NỀN AI & PHÔNG</span>
-              </div>
-              <label class="ai-toggle-label" title="Tách người khỏi phông bằng AI">
-                <input id="aiSegToggle" type="checkbox" checked />
-                <span class="slider"></span>
-                <b class="ai-badge">AI ON</b>
-              </label>
-            </div>
-            
-            <div class="bg-category-tabs">
-              <button class="bg-tab active" data-cat="all">Tất cả</button>
-              <button class="bg-tab" data-cat="solid">Màu trơn</button>
-              <button class="bg-tab" data-cat="gradient">Gradient</button>
-              <button class="bg-cat" data-cat="scene">Cảnh ảo</button>
-            </div>
-
-            <div class="background-picker" id="backgroundPicker"></div>
-            <div class="custom-bg-row">
-              <label class="upload-label" for="customBgInput">
-                <i data-lucide="upload-cloud" class="w-4 h-4 text-brand-500"></i>
-                <span>Tải ảnh nền riêng của bạn</span>
-                <input type="file" id="customBgInput" accept="image/*" />
-              </label>
-            </div>
-          </div>
-
-          <!-- 05 CÀI ĐẶT CAMERA -->
-          <div class="control-section camera-adjustments">
-            <div class="step-label">
-              <span class="step-num">05</span>
-              <span>TÙY CHỈNH CHỤP</span>
-            </div>
-            <div class="setting-row">
-              <label>Thời gian đếm ngược:</label>
-              <div class="timer-selector" id="timerSelector">
-                <button class="timer-btn" data-time="3">3s</button>
-                <button class="timer-btn active" data-time="5">5s</button>
-                <button class="timer-btn" data-time="8">8s</button>
-                <button class="timer-btn" data-time="10">10s</button>
-              </div>
-            </div>
-            <div class="setting-row inline-settings">
-              <label class="toggle"><input id="mirrorToggle" type="checkbox" checked /><span></span> Lật gương</label>
-              <label class="toggle"><input id="beautySmoothToggle" type="checkbox" checked /><span></span> Mịn da nhẹ</label>
-            </div>
-            <div class="zoom-box">
-              <div class="zoom-label">
-                <i data-lucide="zoom-in" class="w-3.5 h-3.5"></i>
-                <span>ZOOM KỸ THUẬT SỐ</span>
-              </div>
-              <div class="zoom-controls-row">
-                <input id="zoomRange" type="range" min="1" max="3" value="1" step="0.05" />
-                <output id="zoomValue">1.0×</output>
-              </div>
-            </div>
-          </div>
-        </aside>
-
-        <!-- CỘT 2: CAMERA STAGE + KHO ẢNH (PHOTO POOL) -->
-        <section class="camera-stage panel">
-          <!-- Màn hình Camera -->
-          <div id="cameraViewport" class="camera-viewport filter-none mirrored">
+    <!-- MAIN TWO-COLUMN STUDIO WORKSPACE -->
+    <main class="studio-workspace">
+      
+      <!-- CỘT TRÁI (62%): PHÒNG CHỤP CHUYÊN NGHIỆP & DẢI FILM KHO ẢNH -->
+      <section class="stage-column">
+        
+        <!-- MÀN HÌNH CAMERA STUDIO -->
+        <div class="camera-card">
+          <div id="cameraViewport" class="camera-screen filter-none mirrored">
             <video id="video" autoplay playsinline muted></video>
             <canvas id="liveCanvas"></canvas>
             
-            <div id="cameraPlaceholder" class="camera-placeholder">
-              <div class="placeholder-icon-ring">
+            <div id="cameraPlaceholder" class="camera-loading-overlay">
+              <div class="loading-pulse-ring">
                 <i data-lucide="camera" class="w-10 h-10 text-white"></i>
               </div>
-              <strong class="text-lg mt-3 text-white">Sẵn sàng khởi động Camera!</strong>
-              <small class="text-white/80">Cho phép trình duyệt truy cập camera để bắt đầu buổi chụp.</small>
-              <button id="enableCamBtn" class="pill-btn primary mt-4">
+              <p class="font-extrabold text-white text-lg mt-3">Khởi động Camera Photobooth</p>
+              <small class="text-white/70 text-xs">Vui lòng bấm Cho phép khi trình duyệt yêu cầu.</small>
+              <button id="enableCamBtn" class="cam-launch-btn mt-4">
                 <i data-lucide="video" class="w-4 h-4"></i>
                 <span>Bật Camera Ngay</span>
               </button>
             </div>
             
-            <div id="countdown" class="countdown" aria-live="assertive"></div>
-            <div class="viewfinder"><i></i><i></i><i></i><i></i></div>
+            <div id="countdown" class="countdown-display" aria-live="assertive"></div>
             
-            <div class="camera-live-badge">
-              <span class="red-dot"></span> LIVE
+            <!-- Viewfinder corner marks -->
+            <div class="viewfinder-corners">
+              <span class="tl"></span><span class="tr"></span>
+              <span class="bl"></span><span class="br"></span>
             </div>
-            <div id="aiStatusBadge" class="ai-status-badge">AI SEGMENTATION ON</div>
+            
+            <!-- Live, Frame & AI Badges -->
+            <div class="live-pill">
+              <span class="live-dot"></span> LIVE
+            </div>
+            <div id="cameraFrameBadge" class="camera-frame-pill" title="Khung ảnh đang chọn">
+              <span id="cameraFrameDot" class="frame-dot"></span>
+              <span>Khung: <strong id="cameraFrameName">Photoism Navy</strong></span>
+            </div>
+            <div id="aiStatusBadge" class="ai-pill">AI SEGMENTATION</div>
           </div>
 
-          <!-- Thanh trạng thái chụp -->
-          <div class="shoot-meta">
-            <span id="shotStatus">Sẵn sàng tạo kỷ niệm? Bấm nút để chụp nhé! ✦</span>
-            <span id="poolCounter" class="counter-badge">Đã chụp: 0 ảnh</span>
-          </div>
+          <!-- DOCK THANH CÔNG CỤ NHANH DƯỚI CAMERA (CAMERA DOCK) -->
+          <div class="camera-dock">
+            <!-- Nút chỉnh Bộ lọc -->
+            <div class="dock-item">
+              <button class="dock-btn" id="openFilterModalBtn" title="Chọn bộ lọc màu">
+                <i data-lucide="sparkles" class="w-4 h-4 text-amber-500"></i>
+                <span id="activeFilterLabel">Màu: Tự nhiên</span>
+              </button>
+            </div>
 
-          <!-- Nút hành động chụp -->
-          <div class="stage-actions-group">
-            <div class="shoot-batch-controls">
-              <span class="flex items-center gap-1.5 text-xs text-gray-600 font-bold">
-                <i data-lucide="layers" class="w-3.5 h-3.5 text-brand-500"></i>
-                <span>Số tấm chụp lượt này:</span>
-              </span>
-              <select id="shotsPerBatchSelect" class="batch-select">
+            <!-- Nút chỉnh Nền ảo AI -->
+            <div class="dock-item">
+              <button class="dock-btn" id="openBgModalBtn" title="Đổi phông nền AI">
+                <i data-lucide="wand-2" class="w-4 h-4 text-purple-500"></i>
+                <span id="activeBgLabel">Nền: Gốc</span>
+              </button>
+            </div>
+
+            <!-- Nút chỉnh Thời gian đếm ngược -->
+            <div class="dock-item">
+              <div class="timer-chips" id="timerSelector">
+                <button class="timer-chip" data-time="3">3s</button>
+                <button class="timer-chip active" data-time="5">5s</button>
+                <button class="timer-chip" data-time="8">8s</button>
+                <button class="timer-chip" data-time="10">10s</button>
+              </div>
+            </div>
+
+            <!-- Lật gương & Mịn da -->
+            <div class="dock-item flex items-center gap-3">
+              <label class="toggle-switch" title="Lật ngược camera">
+                <input id="mirrorToggle" type="checkbox" checked />
+                <span></span> Lật gương
+              </label>
+              <label class="toggle-switch" title="Hiệu ứng mịn da sáng hồng">
+                <input id="beautySmoothToggle" type="checkbox" checked />
+                <span></span> Mịn da
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- BẢNG ĐIỀU KHIỂN CHỤP CHÍNH (SHUTTER BAR) -->
+        <div class="shutter-action-bar">
+          <div class="shutter-meta">
+            <span id="shotStatus" class="status-msg">Sẵn sàng tạo kỷ niệm? Tạo dáng tự tin rồi bấm Chụp nhé ✦</span>
+            <div class="batch-select-wrap">
+              <label for="shotsPerBatchSelect">Số kiểu chụp:</label>
+              <select id="shotsPerBatchSelect" class="studio-select">
                 <option value="1">Chụp 1 tấm lẻ</option>
-                <option value="4">Chụp đợt 4 tấm</option>
-                <option value="6">Chụp đợt 6 tấm</option>
-                <option value="8" selected>Chụp đợt 8 tấm (Chuẩn studio)</option>
-                <option value="10">Chụp đợt 10 tấm</option>
+                <option value="4">Chụp 4 tấm liên tiếp</option>
+                <option value="6">Chụp 6 tấm liên tiếp</option>
+                <option value="8" selected>Chụp 8 tấm (Khuyên dùng)</option>
+                <option value="10">Chụp 10 tấm tha hồ chọn</option>
               </select>
             </div>
-            <div class="stage-actions">
-              <button id="shootBtn" class="shoot-button">
-                <b class="shutter-inner"></b>
-                <span>BẮT ĐẦU CHỤP (8 TẤM)</span>
-              </button>
-              <button id="shootSingleBtn" class="shoot-secondary-btn" title="Chụp thêm 1 tấm đơn lẻ ngay lập tức">
-                <i data-lucide="plus" class="w-4 h-4"></i>
-                <span>Chụp thêm 1 tấm</span>
-              </button>
-            </div>
           </div>
 
-          <!-- KHO ẢNH ĐÃ CHỤP (PHOTO POOL GALLERY) -->
-          <div class="photo-pool-section">
-            <div class="pool-header">
-              <div class="pool-title">
-                <strong>KHO ẢNH ĐÃ CHỤP (PHOTO POOL)</strong>
-                <small>Bấm vào ảnh bất kỳ trong kho để gán vào ô đang chọn bên phải</small>
+          <div class="shutter-btns-row">
+            <button id="shootBtn" class="main-shutter-btn">
+              <div class="shutter-circle-outer">
+                <div class="shutter-circle-inner"></div>
               </div>
-              <div class="pool-actions">
-                <button id="autoFillBtn" class="pool-action-btn" title="Tự động điền các ảnh đầu tiên vào khung">
-                  <i data-lucide="sparkles" class="w-3.5 h-3.5 text-amber-500"></i>
-                  <span>Điền tự động</span>
-                </button>
+              <div class="text-left">
+                <strong class="block text-base font-black tracking-wide">BẮT ĐẦU CHỤP (8 TẤM)</strong>
+                <small class="block text-xs text-rose-100 opacity-90 font-medium">Đếm ngược tự động từng kiểu</small>
+              </div>
+            </button>
+            <button id="shootSingleBtn" class="quick-add-btn" title="Chụp thêm 1 tấm lẻ ngay lập tức">
+              <i data-lucide="plus" class="w-4 h-4"></i>
+              <span>Chụp thêm 1 tấm</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- KHO ẢNH ĐÃ CHỤP (PHOTO POOL FILM ROLL) -->
+        <div class="photo-pool-card">
+          <div class="pool-bar-top">
+            <div class="flex items-center gap-2">
+              <i data-lucide="film" class="w-4 h-4 text-studio-pink"></i>
+              <strong class="text-xs font-black tracking-wider uppercase">Kho ảnh đã chụp</strong>
+              <span id="poolCounter" class="badge-tag">0 ảnh</span>
+            </div>
+            <button id="autoFillBtn" class="auto-fill-btn">
+              <i data-lucide="sparkles" class="w-3.5 h-3.5 text-amber-500"></i>
+              <span>Điền nhanh vào khung</span>
+            </button>
+          </div>
+
+          <div id="photoPoolGrid" class="film-roll-track">
+            <div class="empty-roll-placeholder">
+              <i data-lucide="images" class="w-6 h-6 text-stone-300 mb-1"></i>
+              <p>Chưa có bức ảnh nào trong kho.</p>
+              <small>Bấm nút <b>Bắt đầu chụp</b> ở trên để chụp nhiều tư thế lưu vào đây!</small>
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- CỘT PHẢI (38%): DẢI ẢNH PHOTOBOOTH & TÙY BIẾN KHUNG -->
+      <aside class="preview-column">
+        
+        <!-- THẺ TRUNG TÂM: DẢI ẢNH PHOTOBOOTH THẬT (PREVIEW CANVAS) -->
+        <div class="strip-stage-card">
+          <div class="strip-card-header">
+            <div class="flex items-center gap-2">
+              <i data-lucide="layout" class="w-4 h-4 text-studio-pink"></i>
+              <strong class="text-xs font-black tracking-wider uppercase">Dải ảnh Photobooth</strong>
+            </div>
+            <div class="flex items-center gap-1.5 flex-wrap justify-end">
+              <div class="active-frame-tag" title="Khung ảnh đang chọn">
+                <span id="activeFrameDot" class="frame-dot"></span>
+                <span>Khung: <strong id="currentFrameLabel">Photoism Navy</strong></span>
+              </div>
+              <span id="slotStatusIndicator" class="active-slot-pill">Bấm vào ô để chọn ảnh</span>
+            </div>
+          </div>
+
+          <!-- Alert gợi ý khi khung cần thêm ảnh -->
+          <div id="slotRequirementAlert" class="slot-helper-banner" hidden>
+            <i data-lucide="info" class="w-4 h-4 text-amber-600 shrink-0"></i>
+            <span id="slotRequirementText">Khung cần thêm ảnh</span>
+          </div>
+
+          <!-- Khung dải ảnh Photobooth nổi 3D -->
+          <div class="strip-viewport">
+            <div id="stripWrapper" class="strip-wrapper-3d">
+              <div id="stripPreview" class="strip frame-photoism-navy layout-4"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- TABS TÙY BIẾN DẢI ẢNH: GỌN GÀNG, KHÔNG CUỘN LỒNG NHAU -->
+        <div class="strip-control-card">
+          <!-- Tab Navigation -->
+          <div class="customizer-tabs">
+            <button class="tab-btn active" data-tab="layout">
+              <i data-lucide="grid" class="w-3.5 h-3.5"></i>
+              <span>Bố cục & Khung</span>
+            </button>
+            <button class="tab-btn" data-tab="caption">
+              <i data-lucide="pen-tool" class="w-3.5 h-3.5"></i>
+              <span>Chữ & Sticker</span>
+            </button>
+            <button class="tab-btn" data-tab="export">
+              <i data-lucide="download" class="w-3.5 h-3.5"></i>
+              <span>Xuất ảnh & In</span>
+            </button>
+          </div>
+
+          <!-- TAB 1: BỐ CỤC & KHUNG -->
+          <div id="tabContentLayout" class="tab-pane active">
+            <!-- Bố cục ảnh -->
+            <div class="sub-section">
+              <label class="section-label">Bố cục ảnh:</label>
+              <div class="layout-grid-chips" id="layoutPicker"></div>
+            </div>
+
+            <!-- Khung ảnh -->
+            <div class="sub-section mt-3">
+              <div class="flex items-center justify-between mb-2">
+                <label class="section-label">Khung màu & Hoa văn:</label>
+                <label class="custom-frame-chip" for="customFrameInput">
+                  <i data-lucide="image-plus" class="w-3 h-3"></i>
+                  <span>+ Khung riêng PNG</span>
+                  <input type="file" id="customFrameInput" accept="image/png,image/webp" />
+                </label>
+              </div>
+
+              <!-- Categories -->
+              <div class="frame-filter-chips">
+                <button class="f-chip active" data-category="all">Tất cả (80+)</button>
+                <button class="f-chip" data-category="pinterest">✨ Họa Tiết Pinterest</button>
+                <button class="f-chip" data-category="vietnam">🇻🇳 Việt Nam</button>
+                <button class="f-chip" data-category="world">🌍 Thế Giới</button>
+                <button class="f-chip" data-category="k-studio">K-Studio</button>
+                <button class="f-chip" data-category="y2k">Y2K / Cyber</button>
+                <button class="f-chip" data-category="film">Film & Retro</button>
+                <button class="f-chip" data-category="cute">Cute / Kawaii</button>
+                <button class="f-chip" data-category="event">Tiệc & Kỷ niệm</button>
+                <button class="f-chip" data-category="kpop">K-Pop Idol</button>
+              </div>
+
+              <!-- Frame Swatches -->
+              <div class="frame-swatches-grid" id="framePicker"></div>
+            </div>
+          </div>
+
+          <!-- TAB 2: CHỮ KỶ NIỆM & STICKER -->
+          <div id="tabContentCaption" class="tab-pane">
+            <div class="sub-section">
+              <label class="section-label">Dòng chữ kỷ niệm chân ảnh:</label>
+              <div class="input-with-icon">
+                <i data-lucide="type" class="w-4 h-4 text-stone-400"></i>
+                <input type="text" id="captionInput" placeholder="Nhập chữ kỷ niệm (VD: BESTIES FOREVER ✦)" maxlength="40" value="✦ SNAPBOX MEMORIES ✦" />
               </div>
             </div>
 
-            <div id="photoPoolGrid" class="photo-pool-grid">
-              <div class="empty-pool-hint">
-                <i data-lucide="image" class="w-6 h-6 text-gray-400"></i>
-                <span>Chưa có ảnh nào. Bấm <b>Bắt đầu chụp</b> để lưu nhiều kiểu pose dáng vào đây nhé!</span>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <!-- CỘT 3: XEM TRƯỚC DẢI ẢNH THEO Ô (SLOTS), CHỌN ẢNH VÀO Ô, XUẤT ẢNH -->
-        <aside class="result panel">
-          <div class="step-header">
-            <div class="step-label">
-              <span class="step-num">06</span>
-              <span>DẢI ẢNH PHOTOBOOTH</span>
-            </div>
-            <span id="slotStatusIndicator" class="slot-indicator-badge">Bấm vào ô để chọn ảnh</span>
-          </div>
-
-          <div id="slotRequirementAlert" class="slot-alert" hidden>
-            <i data-lucide="info" class="w-4 h-4 shrink-0"></i>
-            <span id="slotRequirementText">Khung này cần thêm ảnh!</span>
-          </div>
-          
-          <!-- Dải ảnh Photobooth với các ô tương tác -->
-          <div class="strip-container">
-            <div id="stripWrapper" class="strip-wrapper">
-              <div id="stripPreview" class="strip frame-pink layout-4"></div>
-            </div>
-          </div>
-
-          <!-- TRANG TRÍ DẢI ẢNH -->
-          <div class="strip-customizer">
-            <div class="customizer-label">
-              <i data-lucide="type" class="w-3.5 h-3.5 text-brand-500"></i>
-              <span>Trang trí & Dòng chữ kỷ niệm:</span>
-            </div>
-            
-            <div class="caption-input-group">
-              <input type="text" id="captionInput" placeholder="Nhập chữ kỷ niệm (VD: BESTIES 2026 ✦)" maxlength="40" value="✦ SNAPBOX MEMORIES ✦" />
-            </div>
-
-            <div class="caption-options">
-              <label class="toggle-sm">
+            <div class="flex items-center gap-4 mt-3">
+              <label class="toggle-switch">
                 <input type="checkbox" id="showDateToggle" checked />
                 <span></span> Hiện ngày giờ
               </label>
-              <label class="toggle-sm">
+              <label class="toggle-switch">
                 <input type="checkbox" id="showLogoToggle" checked />
-                <span></span> Logo studio
+                <span></span> In logo studio
               </label>
             </div>
 
-            <div class="sticker-palette">
-              <span class="sticker-label">Sticker:</span>
-              <div class="sticker-items" id="stickerPalette">
-                <button class="sticker-btn" data-sticker="❤️">❤️</button>
-                <button class="sticker-btn" data-sticker="✨">✨</button>
-                <button class="sticker-btn" data-sticker="🎀">🎀</button>
-                <button class="sticker-btn" data-sticker="🐰">🐰</button>
-                <button class="sticker-btn" data-sticker="🐱">🐱</button>
-                <button class="sticker-btn" data-sticker="🌸">🌸</button>
-                <button class="sticker-btn" data-sticker="👑">👑</button>
-                <button class="sticker-btn" data-sticker="🕶️">🕶️</button>
-                <button class="sticker-btn clear-stickers-btn" id="clearStickersBtn" title="Xóa toàn bộ sticker">
-                  <i data-lucide="x" class="w-3.5 h-3.5"></i>
-                </button>
+            <div class="sub-section mt-3">
+              <div class="flex items-center justify-between mb-1.5">
+                <label class="section-label">Dán sticker Pinterest (Click hoặc kéo lên dải ảnh):</label>
+                <button id="clearStickersBtn" class="text-[11px] text-rose-500 font-bold hover:underline">Xóa hết sticker</button>
+              </div>
+              <div class="sticker-row" id="stickerPalette">
+                <button class="stk-btn" data-sticker="🎀" title="Nơ Coquette">🎀</button>
+                <button class="stk-btn" data-sticker="🧸" title="Gấu Butter Bear">🧸</button>
+                <button class="stk-btn" data-sticker="💖" title="Trái tim lấp lánh">💖</button>
+                <button class="stk-btn" data-sticker="✨" title="Ngôi sao Sparkles">✨</button>
+                <button class="stk-btn" data-sticker="💋" title="Vết son môi">💋</button>
+                <button class="stk-btn" data-sticker="🍒" title="Cherry ngọt ngào">🍒</button>
+                <button class="stk-btn" data-sticker="🍓" title="Dâu tây">🍓</button>
+                <button class="stk-btn" data-sticker="🐰" title="Thỏ Chibi">🐰</button>
+                <button class="stk-btn" data-sticker="🐱" title="Mèo cưng">🐱</button>
+                <button class="stk-btn" data-sticker="🌸" title="Hoa anh đào">🌸</button>
+                <button class="stk-btn" data-sticker="🌼" title="Cúc họa mi">🌼</button>
+                <button class="stk-btn" data-sticker="🪩" title="Disco Ball Y2K">🪩</button>
+                <button class="stk-btn" data-sticker="💿" title="Đĩa CD Y2K">💿</button>
+                <button class="stk-btn" data-sticker="🕶️" title="Kính râm ngầu">🕶️</button>
+                <button class="stk-btn" data-sticker="👑" title="Vương miện">👑</button>
+                <button class="stk-btn" data-sticker="🎂" title="Bánh sinh nhật">🎂</button>
+                <button class="stk-btn" data-sticker="☕" title="Cà phê Việt Nam">☕</button>
+                <button class="stk-btn" data-sticker="🏮" title="Đèn lồng Hội An">🏮</button>
+                <button class="stk-btn" data-sticker="🧧" title="Bao lì xì Tết">🧧</button>
+                <button class="stk-btn" data-sticker="✈️" title="Máy bay du lịch">✈️</button>
+                <button class="stk-btn" data-sticker="🎟️" title="Vé xem phim">🎟️</button>
+                <button class="stk-btn" data-sticker="💌" title="Thư tình">💌</button>
               </div>
             </div>
           </div>
 
-          <!-- NÚT HÀNH ĐỘNG XUẤT ẢNH -->
-          <div class="result-actions">
-            <button id="downloadBtn" class="download-button group" disabled>
-              <i data-lucide="download" class="w-4 h-4 transition-transform group-hover:translate-y-0.5"></i>
-              <span>TẢI ẢNH PNG HD (300 DPI)</span>
-            </button>
-            <div class="secondary-actions">
-              <button id="qrBtn" class="secondary-btn" disabled title="Tải về điện thoại qua mã QR">
-                <i data-lucide="qr-code" class="w-4 h-4 text-purple-600"></i>
-                <span>Quét QR Mobile</span>
+          <!-- TAB 3: XUẤT ẢNH & IN & QR -->
+          <div id="tabContentExport" class="tab-pane">
+            <div class="export-actions-group">
+              <button id="downloadBtn" class="export-main-btn" disabled>
+                <i data-lucide="download" class="w-5 h-5"></i>
+                <div>
+                  <strong class="block text-sm font-extrabold">TẢI ẢNH VỀ MÁY (HD 300 DPI)</strong>
+                  <small class="block text-stone-400 font-medium">Định dạng file PNG sắc nét chuẩn in ấn</small>
+                </div>
               </button>
-              <button id="printBtn" class="secondary-btn" disabled title="In trực tiếp ra máy in">
-                <i data-lucide="printer" class="w-4 h-4 text-sky-600"></i>
-                <span>In ảnh</span>
-              </button>
-            </div>
-          </div>
-          <p class="hint">Ảnh xử lý 100% trên máy bạn — bảo mật & riêng tư tuyệt đối.</p>
-        </aside>
-      </section>
 
-      <!-- MODAL QUÉT QR TẢI ẢNH QUA ĐIỆN THOẠI -->
-      <div id="qrModal" class="modal-overlay" hidden>
-        <div class="modal-card">
-          <button id="closeQrModal" class="modal-close">✕</button>
-          <div class="flex justify-center mb-2">
-            <div class="w-10 h-10 rounded-full bg-rose-100 flex items-center justify-center text-brand-500">
-              <i data-lucide="smartphone" class="w-5 h-5"></i>
+              <div class="grid grid-cols-2 gap-2 mt-2">
+                <button id="qrBtn" class="export-sub-btn" disabled>
+                  <i data-lucide="qr-code" class="w-4 h-4 text-purple-600"></i>
+                  <span>Quét QR Mobile</span>
+                </button>
+                <button id="printBtn" class="export-sub-btn" disabled>
+                  <i data-lucide="printer" class="w-4 h-4 text-sky-600"></i>
+                  <span>In trực tiếp</span>
+                </button>
+              </div>
             </div>
+            <p class="export-security-note">
+              <i data-lucide="shield-check" class="w-3.5 h-3.5 text-emerald-600 inline"></i>
+              Ảnh xử lý trực tiếp trên thiết bị của bạn — 100% riêng tư và bảo mật.
+            </p>
           </div>
-          <h3 class="text-base font-extrabold text-gray-900">Quét mã QR để tải ảnh về điện thoại</h3>
-          <p class="text-xs text-gray-500 mt-1 mb-3">Mở camera điện thoại của bạn và quét mã bên dưới:</p>
-          <div id="qrcodeBox" class="qrcode-container"></div>
-          <p class="qr-notice text-[10px] text-gray-400 mt-2">Kết nối trực tiếp an toàn không qua máy chủ trung gian.</p>
-          <button id="downloadFromModal" class="pill-btn primary w-full justify-center mt-3">
-            <i data-lucide="download" class="w-4 h-4"></i>
-            <span>Tải về máy tính</span>
+
+        </div>
+
+      </aside>
+
+    </main>
+
+    <!-- POPUP MODAL: CHỌN BỘ LỌC MÀU (K-FILTERS) -->
+    <div id="filterModal" class="studio-modal-overlay" hidden>
+      <div class="studio-modal-card">
+        <div class="modal-header">
+          <div class="flex items-center gap-2">
+            <i data-lucide="sparkles" class="w-4 h-4 text-amber-500"></i>
+            <h3 class="font-extrabold text-sm">Chọn Bộ lọc màu (K-Beauty Filters)</h3>
+          </div>
+          <button id="closeFilterModal" class="modal-x-btn">✕</button>
+        </div>
+        <div class="modal-filters-grid" id="filterPicker">
+          <button class="filter-card active" data-filter="none">
+            <div class="preview-box"></div>
+            <strong>Tự nhiên</strong>
+            <small>Màu thực tế</small>
+          </button>
+          <button class="filter-card" data-filter="k-beauty">
+            <div class="preview-box filter-k-beauty"></div>
+            <strong>✨ K-Beauty</strong>
+            <small>Sáng hồng mịn da</small>
+          </button>
+          <button class="filter-card" data-filter="vintage">
+            <div class="preview-box filter-vintage"></div>
+            <strong>🎞 Film 90s</strong>
+            <small>Hoài niệm vintage</small>
+          </button>
+          <button class="filter-card" data-filter="bw">
+            <div class="preview-box filter-bw"></div>
+            <strong>🖤 Noir B&W</strong>
+            <small>Đen trắng nghệ thuật</small>
+          </button>
+          <button class="filter-card" data-filter="warm">
+            <div class="preview-box filter-warm"></div>
+            <strong>🍑 Warm Peach</strong>
+            <small>Tone ấm ngọt ngào</small>
+          </button>
+          <button class="filter-card" data-filter="cyber">
+            <div class="preview-box filter-cyber"></div>
+            <strong>💜 Cyberpunk</strong>
+            <small>Tím neon cá tính</small>
           </button>
         </div>
       </div>
+    </div>
 
-      <footer>
-        <span>SNAPBOX PHOTOBOOTH STUDIO</span> • SMILE, POSE, REPEAT • CHUẨN KOREAN LIFE 4 CUTS
-      </footer>
-    </main>
+    <!-- POPUP MODAL: TÁCH NỀN AI & CHỌN PHÔNG NỀN ẢO -->
+    <div id="bgModal" class="studio-modal-overlay" hidden>
+      <div class="studio-modal-card max-w-md">
+        <div class="modal-header">
+          <div class="flex items-center gap-2">
+            <i data-lucide="wand-2" class="w-4 h-4 text-purple-500"></i>
+            <h3 class="font-extrabold text-sm">Tách nền AI & Phông nền ảo</h3>
+          </div>
+          <button id="closeBgModal" class="modal-x-btn">✕</button>
+        </div>
+        
+        <div class="flex items-center justify-between p-2.5 bg-stone-50 rounded-xl mb-3 border border-stone-200">
+          <div>
+            <strong class="text-xs block text-stone-800">Tách người khỏi nền bằng AI</strong>
+            <small class="text-[11px] text-stone-500">Không cần phông xanh</small>
+          </div>
+          <label class="toggle-switch">
+            <input id="aiSegToggle" type="checkbox" checked />
+            <span></span>
+          </label>
+        </div>
+
+        <div class="bg-category-tabs mb-2">
+          <button class="f-chip active" data-cat="all">Tất cả</button>
+          <button class="f-chip" data-cat="solid">Màu trơn</button>
+          <button class="f-chip" data-cat="gradient">Gradient</button>
+          <button class="f-chip" data-cat="scene">Cảnh ảo</button>
+        </div>
+
+        <div class="modal-bgs-grid" id="backgroundPicker"></div>
+
+        <div class="mt-3 pt-2 border-t border-stone-100">
+          <label class="custom-bg-btn-wide" for="customBgInput">
+            <i data-lucide="upload" class="w-4 h-4 text-studio-pink"></i>
+            <span>Tải ảnh phông nền riêng từ máy tính/điện thoại</span>
+            <input type="file" id="customBgInput" accept="image/*" />
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL QUÉT QR TẢI ẢNH QUA ĐIỆN THOẠI -->
+    <div id="qrModal" class="studio-modal-overlay" hidden>
+      <div class="studio-modal-card text-center max-w-xs">
+        <button id="closeQrModal" class="modal-x-btn">✕</button>
+        <div class="w-12 h-12 rounded-full bg-rose-50 mx-auto flex items-center justify-center text-studio-pink mb-2">
+          <i data-lucide="smartphone" class="w-6 h-6"></i>
+        </div>
+        <h3 class="font-black text-base text-stone-900">Quét mã QR tải ảnh</h3>
+        <p class="text-xs text-stone-500 mt-1 mb-3">Mở camera trên điện thoại của bạn và hướng vào mã:</p>
+        
+        <div class="qrcode-wrapper">
+          <div id="qrcodeBox"></div>
+        </div>
+
+        <p class="text-[10px] text-stone-400 mt-2">Ảnh được truyền trực tiếp không qua server trung gian.</p>
+        <button id="downloadFromModal" class="w-full mt-3 py-2.5 bg-studio-dark text-white text-xs font-black rounded-xl hover:bg-stone-800">
+          Tải về máy tính
+        </button>
+      </div>
+    </div>
 
     <!-- Canvas phụ để render ảnh xuất HD 300 DPI -->
     <canvas id="exportCanvas" hidden></canvas>
