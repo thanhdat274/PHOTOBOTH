@@ -31,6 +31,11 @@
 .strip.ai-artwork-frame.layout-4 .strip-photos{gap:8px}
 .strip.ai-artwork-frame.layout-4 .strip-slot{border-radius:6px;box-shadow:none;aspect-ratio:1.33}
 
+/* Any layout can retain the selected AI theme instead of falling back to a plain colour frame. */
+.strip.adaptive-ai-frame{background:linear-gradient(145deg,color-mix(in srgb,var(--adaptive-accent) 76%,#111 24%),var(--adaptive-accent))!important;border:3px solid color-mix(in srgb,var(--adaptive-accent) 55%,#fff 45%);box-shadow:0 10px 26px color-mix(in srgb,var(--adaptive-accent) 45%,transparent);overflow:hidden}
+.strip.adaptive-ai-frame::before,.strip.adaptive-ai-frame::after{position:absolute;z-index:1;pointer-events:none;font-size:20px;letter-spacing:5px;opacity:.95}.strip.adaptive-ai-frame::before{content:'✦  ✦  ✦';top:4px;left:11px}.strip.adaptive-ai-frame::after{content:'✦  ✦  ✦';bottom:4px;right:8px}.strip.adaptive-ai-frame .strip-header,.strip.adaptive-ai-frame .strip-photos,.strip.adaptive-ai-frame .strip-footer{position:relative;z-index:2}.strip.adaptive-ai-frame .strip-slot{border:2px solid rgba(255,255,255,.7);box-shadow:0 2px 8px rgba(0,0,0,.25)}
+.strip.adaptive-ai-frame.adaptive-ai-tet-an-vui::before,.strip.adaptive-ai-frame.adaptive-ai-hoi-an::before{content:'🏮  ✦  🏮'}.strip.adaptive-ai-frame.adaptive-ai-tet-an-vui::after{content:'✿  XUÂN  ✿'}.strip.adaptive-ai-frame.adaptive-ai-hoi-an::after{content:'✦  HỘI AN  ✦'}.strip.adaptive-ai-frame.adaptive-ai-trung-thu::before{content:'🌕  🏮  🐇'}.strip.adaptive-ai-frame.adaptive-ai-trung-thu::after{content:'✦  RẰM THÁNG TÁM  ✦'}.strip.adaptive-ai-frame.adaptive-ai-graduation::before{content:'🎓  ✦  🎓'}.strip.adaptive-ai-frame.adaptive-ai-graduation::after{content:'✦  TÂN CỬ NHÂN  ✦'}.strip.adaptive-ai-frame.adaptive-ai-womens-day::before{content:'🌸  ♡  🌸'}.strip.adaptive-ai-frame.adaptive-ai-womens-day::after{content:'✦  8 THÁNG 3  ✦'}.strip.adaptive-ai-frame.adaptive-ai-birthday-cherry::before{content:'🍒  ♡  🍓'}.strip.adaptive-ai-frame.adaptive-ai-couple-rose::before{content:'🌹  ♡  🌹'}.strip.adaptive-ai-frame.adaptive-ai-wedding-gold::before{content:'✦  ♡  ✦'}.strip.adaptive-ai-frame.adaptive-ai-kpop-neon::before{content:'★  ✦  ★'}.strip.adaptive-ai-frame.adaptive-ai-scrapbook::before{content:'★  ☺  ♡'}
+
 * {
   box-sizing: border-box;
   margin: 0;

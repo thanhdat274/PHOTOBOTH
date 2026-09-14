@@ -747,6 +747,10 @@ function updateStripPreview() {
     stripPreview.style.setProperty('background-size', 'cover', 'important');
     stripPreview.style.setProperty('background-position', 'center', 'important');
     stripPreview.classList.add('ai-artwork-frame');
+  } else if (frameCfg && frameCfg.artwork) {
+    // A fixed 4-cut artwork gets a responsive, same-theme frame on other layouts.
+    stripPreview.classList.add('adaptive-ai-frame', `adaptive-${frameCfg.id}`);
+    stripPreview.style.setProperty('--adaptive-accent', frameCfg.color || '#795290');
   }
 
   // 5. Update live UI indicators (Header & Camera)
@@ -1699,11 +1703,6 @@ function setupEventListeners() {
     const btn = e.target.closest('[data-layout]');
     if (!btn || state.busy) return;
     state.layout = btn.dataset.layout;
-    const currentFrame = framesConfig.find(f => f.id === state.frame);
-    if (currentFrame && currentFrame.layouts && !currentFrame.layouts.includes(state.layout)) {
-      state.frame = 'photoism-navy';
-      renderFramePicker();
-    }
     renderLayoutPicker();
     syncSlotAssignments();
   });
@@ -1720,12 +1719,6 @@ function setupEventListeners() {
     const swatch = e.target.closest('[data-frame]');
     if (!swatch) return;
     state.frame = swatch.dataset.frame;
-    const selectedFrame = framesConfig.find(f => f.id === state.frame);
-    if (selectedFrame && selectedFrame.layouts && !selectedFrame.layouts.includes(state.layout)) {
-      state.layout = selectedFrame.layouts[0];
-      renderLayoutPicker();
-      syncSlotAssignments();
-    }
     document.querySelectorAll('#framePicker .frame-swatch').forEach(s => s.classList.toggle('active', s === swatch));
     
     // Trigger quick tactile visual feedback on preview
