@@ -13,6 +13,12 @@
   --radius-sm: 6px;
 }
 
+/* Original AI frame artwork: the four camera images sit over the prepared artwork. */
+.frame-ai-birthday-cherry{background-image:url('assets/frames/birthday-cherry.png')!important;background-size:cover!important;background-position:center!important}
+.frame-ai-couple-rose{background-image:url('assets/frames/couple-rose.png')!important;background-size:cover!important;background-position:center!important}
+.frame-ai-wedding-gold{background-image:url('assets/frames/wedding-gold.png')!important;background-size:cover!important;background-position:center!important}
+.frame-ai-kpop-neon{background-image:url('assets/frames/kpop-neon.png')!important;background-size:cover!important;background-position:center!important}
+
 * {
   box-sizing: border-box;
   margin: 0;

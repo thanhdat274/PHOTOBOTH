@@ -48,6 +48,11 @@ const layoutsConfig = [
 ];
 
 const framesConfig = [
+  // ORIGINAL AI ARTWORK — optimized for the 4-photo 2x6 strip
+  { id: 'ai-birthday-cherry', label: 'AI Birthday Cherry 🍒', category: 'ai-art', color: '#F58BA5', hasGraphics: true, artwork: 'assets/frames/birthday-cherry.png' },
+  { id: 'ai-couple-rose', label: 'AI Love Letter 🌹', category: 'ai-art', color: '#661A1D', textLight: true, hasGraphics: true, artwork: 'assets/frames/couple-rose.png' },
+  { id: 'ai-wedding-gold', label: 'AI Our Forever ✦', category: 'ai-art', color: '#D3B36A', hasGraphics: true, artwork: 'assets/frames/wedding-gold.png' },
+  { id: 'ai-kpop-neon', label: 'AI Main Character ✨', category: 'ai-art', color: '#AF3BEE', textLight: true, hasGraphics: true, artwork: 'assets/frames/kpop-neon.png' },
   // 0. PINTEREST TRENDING GRAPHIC FRAMES 🌟 (Nơ Coquette, Scrapbook Washi, Vé máy bay, Chibi Bear, Phim cổ)
   { id: 'pin-coquette-bow', label: 'Coquette Ribbon 🎀', category: 'pinterest', color: '#FFF0F5', hasGraphics: true },
   { id: 'pin-scrapbook-washi', label: 'Washi Scrapbook 📑', category: 'pinterest', color: '#FDFBF7', hasGraphics: true },
@@ -730,6 +735,12 @@ function updateStripPreview() {
     stripPreview.style.setProperty('background-image', `url('${state.customFrameUrl}')`, 'important');
     stripPreview.style.setProperty('background-size', 'cover', 'important');
     stripPreview.style.setProperty('background-position', 'center', 'important');
+  }
+  if (frameCfg && frameCfg.artwork) {
+    stripPreview.style.setProperty('background-image', `url('${frameCfg.artwork}')`, 'important');
+    stripPreview.style.setProperty('background-size', 'cover', 'important');
+    stripPreview.style.setProperty('background-position', 'center', 'important');
+    stripPreview.classList.add('ai-artwork-frame');
   }
 
   // 5. Update live UI indicators (Header & Camera)
