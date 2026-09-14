@@ -48,6 +48,9 @@ const layoutsConfig = [
 ];
 
 const framesConfig = [
+  { id: 'ai-trung-thu', label: 'AI Trung Thu 🌕', category: 'vietnam', color: '#112A50', textLight: true, hasGraphics: true, artwork: 'assets/frames/trung-thu.png' },
+  { id: 'ai-graduation', label: 'AI Tốt Nghiệp 🎓', category: 'event', color: '#063A7A', textLight: true, hasGraphics: true, artwork: 'assets/frames/graduation.png' },
+  { id: 'ai-womens-day', label: 'AI 8 Tháng 3 🌸', category: 'event', color: '#EBA1A9', hasGraphics: true, artwork: 'assets/frames/womens-day.png' },
   { id: 'ai-tet-an-vui', label: 'AI Tết An Vui 🏮', category: 'vietnam', color: '#A71916', textLight: true, hasGraphics: true, artwork: 'assets/frames/tet-an-vui.png' },
   { id: 'ai-hoi-an', label: 'AI Hội An Lantern 🏮', category: 'vietnam', color: '#B66D10', hasGraphics: true, artwork: 'assets/frames/hoi-an-lantern.png' },
   { id: 'ai-scrapbook', label: 'AI Good Times 📒', category: 'pinterest', color: '#4B9DB0', hasGraphics: true, artwork: 'assets/frames/scrapbook-good-times.png' },
