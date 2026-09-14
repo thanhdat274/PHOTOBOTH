@@ -48,6 +48,9 @@ const layoutsConfig = [
 ];
 
 const framesConfig = [
+  { id: 'ai-tet-an-vui', label: 'AI Tết An Vui 🏮', category: 'vietnam', color: '#A71916', textLight: true, hasGraphics: true, artwork: 'assets/frames/tet-an-vui.png' },
+  { id: 'ai-hoi-an', label: 'AI Hội An Lantern 🏮', category: 'vietnam', color: '#B66D10', hasGraphics: true, artwork: 'assets/frames/hoi-an-lantern.png' },
+  { id: 'ai-scrapbook', label: 'AI Good Times 📒', category: 'pinterest', color: '#4B9DB0', hasGraphics: true, artwork: 'assets/frames/scrapbook-good-times.png' },
   // ORIGINAL AI ARTWORK — optimized for the 4-photo 2x6 strip
   { id: 'ai-birthday-cherry', label: 'AI Birthday Cherry 🍒', category: 'ai-art', color: '#F58BA5', hasGraphics: true, artwork: 'assets/frames/birthday-cherry.png' },
   { id: 'ai-couple-rose', label: 'AI Love Letter 🌹', category: 'ai-art', color: '#661A1D', textLight: true, hasGraphics: true, artwork: 'assets/frames/couple-rose.png' },
