@@ -40,14 +40,10 @@
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
 
-    <!-- MediaPipe Selfie Segmentation for AI Virtual Background -->
-    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/selfie_segmentation/selfie_segmentation.js" crossorigin="anonymous"></script>
-
     <!-- QR Code Library -->
     <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js" crossorigin="anonymous"></script>
 
-    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="style.css?v=20260914-layout-review-v3" />
   </head>
   <body class="bg-studio-bg text-studio-dark font-sans min-h-screen selection:bg-rose-500 selection:text-white antialiased">
     
@@ -116,6 +112,9 @@
               <span>Khung: <strong id="cameraFrameName">Photoism Navy</strong></span>
             </div>
             <div id="aiStatusBadge" class="ai-pill">AI SEGMENTATION</div>
+            <button id="switchCamBtn" class="switch-cam-btn" title="Đổi camera trước/sau" hidden>
+              <i data-lucide="switch-camera" class="w-4 h-4"></i>
+            </button>
           </div>
 
           <!-- DOCK THANH CÔNG CỤ NHANH DƯỚI CAMERA (CAMERA DOCK) -->
@@ -218,10 +217,11 @@
 
       </section>
 
-      <!-- CỘT PHẢI (38%): DẢI ẢNH PHOTOBOOTH & TÙY BIẾN KHUNG -->
-      <aside class="preview-column">
-        
-        <!-- THẺ TRUNG TÂM: DẢI ẢNH PHOTOBOOTH THẬT (PREVIEW CANVAS) -->
+      <!-- CỘT GIỮA: DẢI ẢNH PHOTOBOOTH & BỐ CỤC ẢNH -->
+      <section class="layout-column">
+
+        <!-- THẺ: DẢI ẢNH PHOTOBOOTH THẬT (PREVIEW CANVAS) — nằm ngay trên bố cục để
+             xem trực tiếp khung áp dụng vào bố cục đang chọn như thế nào. -->
         <div class="strip-stage-card">
           <div class="strip-card-header">
             <div class="flex items-center gap-2">
@@ -229,6 +229,10 @@
               <strong class="text-xs font-black tracking-wider uppercase">Dải ảnh Photobooth</strong>
             </div>
             <div class="flex items-center gap-1.5 flex-wrap justify-end">
+              <button type="button" id="toggleStripFitBtn" class="strip-fit-btn active" title="Chuyển chế độ xem vừa khung hoặc kích thước thật">
+                <i data-lucide="scan" class="w-3.5 h-3.5"></i>
+                <span>Vừa khung</span>
+              </button>
               <div class="active-frame-tag" title="Khung ảnh đang chọn">
                 <span id="activeFrameDot" class="frame-dot"></span>
                 <span>Khung: <strong id="currentFrameLabel">Photoism Navy</strong></span>
@@ -244,155 +248,191 @@
           </div>
 
           <!-- Khung dải ảnh Photobooth nổi 3D -->
-          <div class="strip-viewport">
+          <div class="strip-viewport fit-mode" id="stripViewport">
             <div id="stripWrapper" class="strip-wrapper-3d">
               <div id="stripPreview" class="strip frame-photoism-navy layout-4"></div>
             </div>
           </div>
         </div>
 
-        <!-- TABS TÙY BIẾN DẢI ẢNH: GỌN GÀNG, KHÔNG CUỘN LỒNG NHAU -->
-        <div class="strip-control-card">
-          <!-- Tab Navigation -->
-          <div class="customizer-tabs">
-            <button class="tab-btn active" data-tab="layout">
-              <i data-lucide="grid" class="w-3.5 h-3.5"></i>
-              <span>Bố cục & Khung</span>
-            </button>
-            <button class="tab-btn" data-tab="caption">
-              <i data-lucide="pen-tool" class="w-3.5 h-3.5"></i>
-              <span>Chữ & Sticker</span>
-            </button>
-            <button class="tab-btn" data-tab="export">
-              <i data-lucide="download" class="w-3.5 h-3.5"></i>
-              <span>Xuất ảnh & In</span>
-            </button>
-          </div>
-
-          <!-- TAB 1: BỐ CỤC & KHUNG -->
-          <div id="tabContentLayout" class="tab-pane active">
-            <!-- Bố cục ảnh -->
-            <div class="sub-section">
-              <label class="section-label">Bố cục ảnh:</label>
-              <div class="layout-grid-chips" id="layoutPicker"></div>
-            </div>
-
-            <!-- Khung ảnh -->
-            <div class="sub-section mt-3">
-              <div class="flex items-center justify-between mb-2">
-                <label class="section-label">Khung màu & Hoa văn:</label>
-                <label class="custom-frame-chip" for="customFrameInput">
-                  <i data-lucide="image-plus" class="w-3 h-3"></i>
-                  <span>+ Khung riêng PNG</span>
-                  <input type="file" id="customFrameInput" accept="image/png,image/webp" />
-                </label>
-              </div>
-
-              <!-- Categories -->
-              <div class="frame-filter-chips">
-                <button class="f-chip active" data-category="all">Tất cả (80+)</button>
-                <button class="f-chip" data-category="pinterest">✨ Họa Tiết Pinterest</button>
-                <button class="f-chip" data-category="vietnam">🇻🇳 Việt Nam</button>
-                <button class="f-chip" data-category="world">🌍 Thế Giới</button>
-                <button class="f-chip" data-category="k-studio">K-Studio</button>
-                <button class="f-chip" data-category="y2k">Y2K / Cyber</button>
-                <button class="f-chip" data-category="film">Film & Retro</button>
-                <button class="f-chip" data-category="cute">Cute / Kawaii</button>
-                <button class="f-chip" data-category="event">Tiệc & Kỷ niệm</button>
-                <button class="f-chip" data-category="kpop">K-Pop Idol</button>
-              </div>
-
-              <!-- Frame Swatches -->
-              <div class="frame-swatches-grid" id="framePicker"></div>
-            </div>
-          </div>
-
-          <!-- TAB 2: CHỮ KỶ NIỆM & STICKER -->
-          <div id="tabContentCaption" class="tab-pane">
-            <div class="sub-section">
-              <label class="section-label">Dòng chữ kỷ niệm chân ảnh:</label>
-              <div class="input-with-icon">
-                <i data-lucide="type" class="w-4 h-4 text-stone-400"></i>
-                <input type="text" id="captionInput" placeholder="Nhập chữ kỷ niệm (VD: BESTIES FOREVER ✦)" maxlength="40" value="✦ SNAPBOX MEMORIES ✦" />
-              </div>
-            </div>
-
-            <div class="flex items-center gap-4 mt-3">
-              <label class="toggle-switch">
-                <input type="checkbox" id="showDateToggle" checked />
-                <span></span> Hiện ngày giờ
-              </label>
-              <label class="toggle-switch">
-                <input type="checkbox" id="showLogoToggle" checked />
-                <span></span> In logo studio
-              </label>
-            </div>
-
-            <div class="sub-section mt-3">
-              <div class="flex items-center justify-between mb-1.5">
-                <label class="section-label">Dán sticker Pinterest (Click hoặc kéo lên dải ảnh):</label>
-                <button id="clearStickersBtn" class="text-[11px] text-rose-500 font-bold hover:underline">Xóa hết sticker</button>
-              </div>
-              <div class="sticker-row" id="stickerPalette">
-                <button class="stk-btn" data-sticker="🎀" title="Nơ Coquette">🎀</button>
-                <button class="stk-btn" data-sticker="🧸" title="Gấu Butter Bear">🧸</button>
-                <button class="stk-btn" data-sticker="💖" title="Trái tim lấp lánh">💖</button>
-                <button class="stk-btn" data-sticker="✨" title="Ngôi sao Sparkles">✨</button>
-                <button class="stk-btn" data-sticker="💋" title="Vết son môi">💋</button>
-                <button class="stk-btn" data-sticker="🍒" title="Cherry ngọt ngào">🍒</button>
-                <button class="stk-btn" data-sticker="🍓" title="Dâu tây">🍓</button>
-                <button class="stk-btn" data-sticker="🐰" title="Thỏ Chibi">🐰</button>
-                <button class="stk-btn" data-sticker="🐱" title="Mèo cưng">🐱</button>
-                <button class="stk-btn" data-sticker="🌸" title="Hoa anh đào">🌸</button>
-                <button class="stk-btn" data-sticker="🌼" title="Cúc họa mi">🌼</button>
-                <button class="stk-btn" data-sticker="🪩" title="Disco Ball Y2K">🪩</button>
-                <button class="stk-btn" data-sticker="💿" title="Đĩa CD Y2K">💿</button>
-                <button class="stk-btn" data-sticker="🕶️" title="Kính râm ngầu">🕶️</button>
-                <button class="stk-btn" data-sticker="👑" title="Vương miện">👑</button>
-                <button class="stk-btn" data-sticker="🎂" title="Bánh sinh nhật">🎂</button>
-                <button class="stk-btn" data-sticker="☕" title="Cà phê Việt Nam">☕</button>
-                <button class="stk-btn" data-sticker="🏮" title="Đèn lồng Hội An">🏮</button>
-                <button class="stk-btn" data-sticker="🧧" title="Bao lì xì Tết">🧧</button>
-                <button class="stk-btn" data-sticker="✈️" title="Máy bay du lịch">✈️</button>
-                <button class="stk-btn" data-sticker="🎟️" title="Vé xem phim">🎟️</button>
-                <button class="stk-btn" data-sticker="💌" title="Thư tình">💌</button>
-              </div>
-            </div>
-          </div>
-
-          <!-- TAB 3: XUẤT ẢNH & IN & QR -->
-          <div id="tabContentExport" class="tab-pane">
-            <div class="export-actions-group">
-              <button id="downloadBtn" class="export-main-btn" disabled>
-                <i data-lucide="download" class="w-5 h-5"></i>
-                <div>
-                  <strong class="block text-sm font-extrabold">TẢI ẢNH VỀ MÁY (HD 300 DPI)</strong>
-                  <small class="block text-stone-400 font-medium">Định dạng file PNG sắc nét chuẩn in ấn</small>
-                </div>
-              </button>
-
-              <div class="grid grid-cols-2 gap-2 mt-2">
-                <button id="qrBtn" class="export-sub-btn" disabled>
-                  <i data-lucide="qr-code" class="w-4 h-4 text-purple-600"></i>
-                  <span>Quét QR Mobile</span>
-                </button>
-                <button id="printBtn" class="export-sub-btn" disabled>
-                  <i data-lucide="printer" class="w-4 h-4 text-sky-600"></i>
-                  <span>In trực tiếp</span>
-                </button>
-              </div>
-            </div>
-            <p class="export-security-note">
-              <i data-lucide="shield-check" class="w-3.5 h-3.5 text-emerald-600 inline"></i>
-              Ảnh xử lý trực tiếp trên thiết bị của bạn — 100% riêng tư và bảo mật.
-            </p>
-          </div>
-
+        <div class="side-picker-card">
+          <label class="section-label">Bố cục ảnh:</label>
+          <div class="layout-grid-chips" id="layoutPicker"></div>
+          <!-- Gợi ý khi khung đang chọn không có thiết kế riêng cho bố cục này -->
+          <p id="layoutFrameHint" class="layout-frame-hint" hidden></p>
         </div>
+      </section>
 
+      <!-- CỘT PHẢI: KHUNG MÀU & HOA VĂN -->
+      <aside class="frame-column">
+        <div class="side-picker-card frame-picker-card">
+          <div class="frame-section-header">
+            <label class="section-label">Khung màu & Hoa văn:</label>
+            <div class="frame-section-actions">
+              <button type="button" id="openFrameModalBtn" class="browse-all-frames-btn" title="Mở thư viện phóng to hơn 100 mẫu khung">
+                <i data-lucide="layout-grid" class="w-3.5 h-3.5 text-studio-pink"></i>
+                <span>Xem lớn 100+ khung</span>
+              </button>
+              <label class="custom-frame-chip" for="customFrameInput" title="Tải khung PNG riêng từ máy tính">
+                <i data-lucide="upload" class="w-3 h-3"></i>
+                <span>+ Tải PNG</span>
+                <input type="file" id="customFrameInput" accept="image/png,image/webp" />
+              </label>
+            </div>
+          </div>
+
+          <!-- Thẻ hiển thị khung đang chọn (Active Frame Hero Banner) -->
+          <div id="activeFrameHeroCard" class="active-frame-hero-card">
+            <div class="hero-frame-preview-box" id="heroFrameThumb"></div>
+            <div class="hero-frame-meta">
+              <div class="flex items-center gap-1.5">
+                <span class="hero-badge">Đang dùng</span>
+                <span class="hero-category-tag" id="heroFrameCategory">Việt Nam</span>
+              </div>
+              <strong class="hero-title" id="heroFrameName">Tết An Vui 🏮</strong>
+            </div>
+            <button type="button" id="heroExpandBtn" class="hero-expand-action-btn" title="Xem bộ sưu tập khung lớn">
+              <i data-lucide="maximize-2" class="w-4 h-4"></i>
+              <span>Xem lớn</span>
+            </button>
+          </div>
+
+          <!-- Thanh tìm kiếm khung ảnh nhanh -->
+          <div class="frame-search-bar">
+            <i data-lucide="search" class="w-3.5 h-3.5 text-stone-400"></i>
+            <input type="text" id="frameSearchInput" placeholder="Tìm tên khung (Tết, Hội An, Cherry, Y2K, Film, Rose...)" autocomplete="off" />
+            <button type="button" id="clearFrameSearchBtn" class="clear-search-btn" hidden title="Xóa tìm kiếm">✕</button>
+          </div>
+
+          <!-- Categories -->
+          <div class="frame-filter-chips">
+            <button class="f-chip active" data-category="all">Tất cả (100+)</button>
+            <button class="f-chip" data-category="pinterest">✨ Họa Tiết Pinterest</button>
+            <button class="f-chip" data-category="vietnam">🇻🇳 Việt Nam</button>
+            <button class="f-chip" data-category="viet-holiday">🎊 Lễ hội VN</button>
+            <button class="f-chip" data-category="viet-travel">🧳 Du lịch VN</button>
+            <button class="f-chip" data-category="world">🌍 Thế Giới</button>
+            <button class="f-chip" data-category="k-studio">🇰🇷 K-Studio</button>
+            <button class="f-chip" data-category="y2k">⚡ Y2K / Cyber</button>
+            <button class="f-chip" data-category="film">🎞 Film & Retro</button>
+            <button class="f-chip" data-category="cute">🎀 Cute / Kawaii</button>
+            <button class="f-chip" data-category="event">🎉 Tiệc & Kỷ niệm</button>
+            <button class="f-chip" data-category="kpop">💿 K-Pop Idol</button>
+            <button class="f-chip" data-category="trend-2026">🔥 Trend 2026</button>
+          </div>
+
+          <!-- Trạng thái lọc khung theo bố cục đang chọn -->
+          <div id="frameLayoutFilterBar" class="frame-layout-filter-bar" hidden>
+            <span id="frameLayoutFilterText"></span>
+            <button type="button" id="frameLayoutFilterToggleBtn" class="frame-layout-filter-toggle"></button>
+          </div>
+
+          <!-- Frame Swatches (Lưới 3 cột thoáng rộng, rõ từng mẫu khung) -->
+          <div class="frame-swatches-scroll-wrap">
+            <div class="frame-swatches-grid" id="framePicker"></div>
+          </div>
+        </div>
       </aside>
 
     </main>
+
+    <!-- HÀNG DƯỚI (RỘNG HẾT TRANG): CHỮ & STICKER / XUẤT ẢNH & IN -->
+    <div class="studio-workspace-secondary">
+      <div class="strip-control-card">
+        <!-- Tab Navigation -->
+        <div class="customizer-tabs">
+          <button class="tab-btn active" data-tab="caption">
+            <i data-lucide="pen-tool" class="w-3.5 h-3.5"></i>
+            <span>Chữ & Sticker</span>
+          </button>
+          <button class="tab-btn" data-tab="export">
+            <i data-lucide="download" class="w-3.5 h-3.5"></i>
+            <span>Xuất ảnh & In</span>
+          </button>
+        </div>
+
+        <!-- TAB: CHỮ KỶ NIỆM & STICKER -->
+        <div id="tabContentCaption" class="tab-pane active">
+          <div class="sub-section">
+            <label class="section-label">Dòng chữ kỷ niệm chân ảnh:</label>
+            <div class="input-with-icon">
+              <i data-lucide="type" class="w-4 h-4 text-stone-400"></i>
+              <input type="text" id="captionInput" placeholder="Nhập chữ kỷ niệm (VD: BESTIES FOREVER ✦)" maxlength="40" value="✦ SNAPBOX MEMORIES ✦" />
+            </div>
+          </div>
+
+          <div class="flex items-center gap-4 mt-3">
+            <label class="toggle-switch">
+              <input type="checkbox" id="showDateToggle" checked />
+              <span></span> Hiện ngày giờ
+            </label>
+            <label class="toggle-switch">
+              <input type="checkbox" id="showLogoToggle" checked />
+              <span></span> In logo studio
+            </label>
+          </div>
+
+          <div class="sub-section mt-3">
+            <div class="flex items-center justify-between mb-1.5">
+              <label class="section-label">Dán sticker Pinterest (Click hoặc kéo lên dải ảnh):</label>
+              <button id="clearStickersBtn" class="text-[11px] text-rose-500 font-bold hover:underline">Xóa hết sticker</button>
+            </div>
+            <div class="sticker-row" id="stickerPalette">
+              <button class="stk-btn" data-sticker="🎀" title="Nơ Coquette">🎀</button>
+              <button class="stk-btn" data-sticker="🧸" title="Gấu Butter Bear">🧸</button>
+              <button class="stk-btn" data-sticker="💖" title="Trái tim lấp lánh">💖</button>
+              <button class="stk-btn" data-sticker="✨" title="Ngôi sao Sparkles">✨</button>
+              <button class="stk-btn" data-sticker="💋" title="Vết son môi">💋</button>
+              <button class="stk-btn" data-sticker="🍒" title="Cherry ngọt ngào">🍒</button>
+              <button class="stk-btn" data-sticker="🍓" title="Dâu tây">🍓</button>
+              <button class="stk-btn" data-sticker="🐰" title="Thỏ Chibi">🐰</button>
+              <button class="stk-btn" data-sticker="🐱" title="Mèo cưng">🐱</button>
+              <button class="stk-btn" data-sticker="🌸" title="Hoa anh đào">🌸</button>
+              <button class="stk-btn" data-sticker="🌼" title="Cúc họa mi">🌼</button>
+              <button class="stk-btn" data-sticker="🪩" title="Disco Ball Y2K">🪩</button>
+              <button class="stk-btn" data-sticker="💿" title="Đĩa CD Y2K">💿</button>
+              <button class="stk-btn" data-sticker="🕶️" title="Kính râm ngầu">🕶️</button>
+              <button class="stk-btn" data-sticker="👑" title="Vương miện">👑</button>
+              <button class="stk-btn" data-sticker="🎂" title="Bánh sinh nhật">🎂</button>
+              <button class="stk-btn" data-sticker="☕" title="Cà phê Việt Nam">☕</button>
+              <button class="stk-btn" data-sticker="🏮" title="Đèn lồng Hội An">🏮</button>
+              <button class="stk-btn" data-sticker="🧧" title="Bao lì xì Tết">🧧</button>
+              <button class="stk-btn" data-sticker="✈️" title="Máy bay du lịch">✈️</button>
+              <button class="stk-btn" data-sticker="🎟️" title="Vé xem phim">🎟️</button>
+              <button class="stk-btn" data-sticker="💌" title="Thư tình">💌</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB: XUẤT ẢNH & IN & QR -->
+        <div id="tabContentExport" class="tab-pane">
+          <div class="export-actions-group">
+            <button id="downloadBtn" class="export-main-btn" disabled>
+              <i data-lucide="download" class="w-5 h-5"></i>
+              <div>
+                <strong class="block text-sm font-extrabold">TẢI ẢNH VỀ MÁY (HD 300 DPI)</strong>
+                <small class="block text-stone-400 font-medium">Định dạng file PNG sắc nét chuẩn in ấn</small>
+              </div>
+            </button>
+
+            <div class="grid grid-cols-2 gap-2 mt-2">
+              <button id="qrBtn" class="export-sub-btn" disabled>
+                <i data-lucide="qr-code" class="w-4 h-4 text-purple-600"></i>
+                <span>Quét QR Mobile</span>
+              </button>
+              <button id="printBtn" class="export-sub-btn" disabled>
+                <i data-lucide="printer" class="w-4 h-4 text-sky-600"></i>
+                <span>In trực tiếp</span>
+              </button>
+            </div>
+          </div>
+          <p class="export-security-note">
+            <i data-lucide="shield-check" class="w-3.5 h-3.5 text-emerald-600 inline"></i>
+            Ảnh xử lý trực tiếp trên thiết bị của bạn — 100% riêng tư và bảo mật.
+          </p>
+        </div>
+      </div>
+    </div>
 
     <!-- POPUP MODAL: CHỌN BỘ LỌC MÀU (K-FILTERS) -->
     <div id="filterModal" class="studio-modal-overlay" hidden>
@@ -501,9 +541,63 @@
       </div>
     </div>
 
+    <!-- POPUP MODAL: THƯ VIỆN KHUNG ẢNH PHOTOBOOTH PHÓNG TO (100+ MẪU) -->
+    <div id="frameModal" class="studio-modal-overlay" hidden>
+      <div class="studio-modal-card max-w-3xl frame-modal-card">
+        <div class="modal-header">
+          <div class="flex items-center gap-2.5">
+            <div class="w-9 h-9 rounded-xl bg-rose-50 flex items-center justify-center text-studio-pink">
+              <i data-lucide="layout-grid" class="w-5 h-5"></i>
+            </div>
+            <div>
+              <h3 class="font-extrabold text-base text-stone-900">Thư Viện Khung Ảnh Photobooth (100+ Mẫu)</h3>
+              <p class="text-xs text-stone-500">Xem ảnh lớn sắc nét, chọn mẫu ưng ý nhất cho bức ảnh kỷ niệm của bạn</p>
+            </div>
+          </div>
+          <button id="closeFrameModal" class="modal-x-btn">✕</button>
+        </div>
+
+        <!-- Thanh tìm kiếm trong modal -->
+        <div class="modal-search-wrap">
+          <div class="frame-search-bar">
+            <i data-lucide="search" class="w-4 h-4 text-stone-400"></i>
+            <input type="text" id="modalFrameSearchInput" placeholder="Tìm kiếm nhanh tên khung (vd: Tết, Hội An, Cherry, Cyber, Film, Blackpink...)" autocomplete="off" />
+            <button type="button" id="clearModalFrameSearchBtn" class="clear-search-btn" hidden>✕</button>
+          </div>
+        </div>
+
+        <!-- Categories trong modal -->
+        <div class="frame-filter-chips modal-frame-chips">
+          <button class="f-chip active" data-modal-category="all">Tất cả (100+)</button>
+          <button class="f-chip" data-modal-category="pinterest">✨ Họa Tiết Pinterest</button>
+          <button class="f-chip" data-modal-category="vietnam">🇻🇳 Việt Nam</button>
+          <button class="f-chip" data-modal-category="viet-holiday">🎊 Lễ hội VN</button>
+          <button class="f-chip" data-modal-category="viet-travel">🧳 Du lịch VN</button>
+          <button class="f-chip" data-modal-category="world">🌍 Thế Giới</button>
+          <button class="f-chip" data-modal-category="k-studio">🇰🇷 K-Studio</button>
+          <button class="f-chip" data-modal-category="y2k">⚡ Y2K / Cyber</button>
+          <button class="f-chip" data-modal-category="film">🎞 Film & Retro</button>
+          <button class="f-chip" data-modal-category="cute">🎀 Cute / Kawaii</button>
+          <button class="f-chip" data-modal-category="event">🎉 Tiệc & Kỷ niệm</button>
+          <button class="f-chip" data-modal-category="kpop">💿 K-Pop Idol</button>
+          <button class="f-chip" data-modal-category="trend-2026">🔥 Trend 2026</button>
+        </div>
+
+        <!-- Grid thẻ khung lớn trong modal -->
+        <div class="modal-frames-grid" id="modalFramePicker"></div>
+
+        <div class="modal-footer-tip">
+          <small class="text-stone-500 text-xs flex items-center justify-between w-full">
+            <span>✦ <strong>Mẹo:</strong> Bấm vào khung bất kỳ để áp dụng ngay vào dải ảnh photobooth.</span>
+            <span id="modalFrameCount" class="font-bold text-stone-400">100+ mẫu</span>
+          </small>
+        </div>
+      </div>
+    </div>
+
     <!-- Canvas phụ để render ảnh xuất HD 300 DPI -->
     <canvas id="exportCanvas" hidden></canvas>
     
-    <script src="app.js"></script>
+    <script type="module" src="app.js?v=20260914-gpu-segmentation-v1"></script>
   </body>
 </html>

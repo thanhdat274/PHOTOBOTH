@@ -5,11 +5,13 @@
  * 3D strip preview, modal picker overlays, 300 DPI Export & MediaPipe AI.
  */
 
+import { FilesetResolver, ImageSegmenter } from 'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@1.0.1/vision_bundle.mjs';
+
 // ==================== APPLICATION STATE ====================
 const state = {
-  layout: '4', // '1', '2', '3', '4', '4-grid', '6', '8', '9'
+  layout: '3', // '1', '2', '3', '4', '4-grid', '6', '8', '9'
   filter: 'none',
-  frame: 'photoism-navy',
+  frame: 'polaroid-onestep',
   customFrameUrl: null,
   background: 'none',
   customBgUrl: null,
@@ -18,6 +20,7 @@ const state = {
   soundEnabled: true,
   countdownTime: 5,
   mirror: true,
+  facingMode: 'user', // 'user' = camera trước, 'environment' = camera sau
   beautySmooth: true,
   zoom: 1.0,
   caption: '✦ SNAPBOX MEMORIES ✦',
@@ -36,18 +39,58 @@ const state = {
 };
 
 // ==================== PRESET DATA ====================
+// Professional booth print geometry: landscape photo wells are normally 3:2.
+// Export canvases below map to 300 DPI paper sizes (2x6, 4x6 and 6x8 inches).
+const PHOTO_ASPECT_RATIO = 3 / 2;
+
 const layoutsConfig = [
-  { id: '1', label: '1 ẢNH', sub: 'Polaroid', count: 1, cols: 1 },
-  { id: '2', label: '2 ẢNH', sub: 'Dọc đôi', count: 2, cols: 1 },
-  { id: '3', label: '3 ẢNH', sub: 'Dải ba', count: 3, cols: 1 },
-  { id: '4', label: '4 ẢNH', sub: 'Dải 2x6"', count: 4, cols: 1 },
-  { id: '4-grid', label: '4 Ô', sub: 'Lưới vuông', count: 4, cols: 2 },
-  { id: '6', label: '6 ẢNH', sub: 'Lưới 2x3', count: 6, cols: 2 },
-  { id: '8', label: '8 ẢNH', sub: 'Dải kép 2x4', count: 8, cols: 2 },
-  { id: '9', label: '9 ẢNH', sub: 'Grid 3x3', count: 9, cols: 3 }
+  { id: '1', label: '1 ẢNH', sub: 'Ảnh 4x6"', count: 1, cols: 1, preview: { width: 300, gap: 8, slotAspect: PHOTO_ASPECT_RATIO }, export: { width: 1200, height: 1800, padX: 60, topPad: 120, bottomPad: 240, gap: 30 } },
+  { id: '2', label: '2 ẢNH', sub: 'Đôi 4x6"', count: 2, cols: 1, preview: { width: 300, gap: 8, slotAspect: PHOTO_ASPECT_RATIO }, export: { width: 1200, height: 1800, padX: 60, topPad: 90, bottomPad: 240, gap: 30 } },
+  { id: '3', label: '3 ẢNH', sub: 'Dải ba 4x6"', count: 3, cols: 1, preview: { width: 300, gap: 8, slotAspect: PHOTO_ASPECT_RATIO }, export: { width: 1200, height: 1800, padX: 210, topPad: 60, bottomPad: 120, gap: 30 } },
+  { id: '4', label: '4 ẢNH', sub: 'Dải 2x6"', count: 4, cols: 1, preview: { width: 300, gap: 8, slotAspect: PHOTO_ASPECT_RATIO }, export: { width: 600, height: 1800, padX: 30, topPad: 54, bottomPad: 234, gap: 24 } },
+  { id: '4-grid', label: '4 Ô', sub: 'Lưới 4x6"', count: 4, cols: 2, preview: { width: 360, gap: 7, slotAspect: PHOTO_ASPECT_RATIO }, export: { width: 1200, height: 1800, padX: 45, topPad: 150, bottomPad: 870, gap: 30 } },
+  { id: '6', label: '6 ẢNH', sub: 'Lưới 4x6"', count: 6, cols: 2, preview: { width: 360, gap: 6, slotAspect: PHOTO_ASPECT_RATIO }, export: { width: 1200, height: 1800, padX: 45, topPad: 120, bottomPad: 480, gap: 30 } },
+  { id: '8', label: '8 ẢNH', sub: 'Lưới 6x8"', count: 8, cols: 2, preview: { width: 360, gap: 6, slotAspect: PHOTO_ASPECT_RATIO }, export: { width: 1800, height: 2400, padX: 120, topPad: 80, bottomPad: 188, gap: 36 } },
+  { id: '9', label: '9 ẢNH', sub: 'Grid 6x8"', count: 9, cols: 3, preview: { width: 480, gap: 5, slotAspect: PHOTO_ASPECT_RATIO }, export: { width: 1800, height: 2400, padX: 90, topPad: 180, bottomPad: 1060, gap: 30 } }
 ];
 
 const framesConfig = [
+  // White instant camera + 35mm film strip (based on the user's reference)
+  {
+    id: 'polaroid-onestep-film',
+    label: 'OneStep Film Strip',
+    category: 'film',
+    color: '#151515',
+    hasGraphics: true,
+    assets: {
+      '1': 'assets/frames/polaroid-onestep-film-1.png',
+      '2': 'assets/frames/polaroid-onestep-film-2.png',
+      '3': 'assets/frames/polaroid-onestep-film.png',
+      '4': 'assets/frames/polaroid-onestep-film-4.png'
+    },
+    textLight: true
+  },
+  {
+    id: 'onestep-burgundy-bloom',
+    label: 'OneStep Burgundy Bloom',
+    category: 'pinterest',
+    color: '#780016',
+    hasGraphics: true,
+    // Use the responsive frame renderer until every raster overlay has matching
+    // 3:2 print wells. This prevents a camera image from being forced into a
+    // portrait/square hole or being cropped.
+    assets: { '2': 'assets/frames/onestep-burgundy-bloom-2-16x9.png' },
+    textLight: true
+  },
+  // 🎀 Khung Polaroid OneStep (Ảnh bạn vừa tải lên)
+  {
+    id: 'polaroid-onestep',
+    label: 'Polaroid OneStep 🎀',
+    category: 'pinterest',
+    color: '#3C070F',
+    hasGraphics: true,
+    textLight: true
+  },
   { id: 'ai-trung-thu', label: 'AI Trung Thu 🌕', category: 'vietnam', color: '#112A50', textLight: true, hasGraphics: true, artwork: 'assets/frames/trung-thu.png', layouts: ['4'] },
   { id: 'ai-graduation', label: 'AI Tốt Nghiệp 🎓', category: 'event', color: '#063A7A', textLight: true, hasGraphics: true, artwork: 'assets/frames/graduation.png', layouts: ['4'] },
   { id: 'ai-womens-day', label: 'AI 8 Tháng 3 🌸', category: 'event', color: '#EBA1A9', hasGraphics: true, artwork: 'assets/frames/womens-day.png', layouts: ['4'] },
@@ -157,7 +200,90 @@ const framesConfig = [
   { id: 'prism-holo', label: 'Photocard Prism', category: 'kpop', color: '#E0F2FE' },
   { id: 'blackpink-style', label: 'Pink & Black', category: 'kpop', color: '#18181B', textLight: true },
   { id: 'candy-pop', label: 'Candy Pop Idol', category: 'kpop', color: '#F472B6', textLight: true },
-  { id: 'galaxy-nebula', label: 'Galaxy Universe', category: 'kpop', color: '#1E1B4B', textLight: true }
+  { id: 'galaxy-nebula', label: 'Galaxy Universe', category: 'kpop', color: '#1E1B4B', textLight: true },
+
+  // 7. PINTEREST TRENDING GRAPHIC FRAMES — thêm (chibi, coquette, y2k glitch...)
+  { id: 'pin-90s-camcorder', label: '90s Camcorder 📼', category: 'pinterest', color: '#09090B', textLight: true },
+  { id: 'pin-bunny-daisy', label: 'Bunny & Daisy 🐰', category: 'pinterest', color: '#ECFDF5' },
+  { id: 'pin-cherry-sweet', label: 'Cherry Sweet 🍒', category: 'pinterest', color: '#FFF1F2' },
+  { id: 'pin-coquette-pearl', label: 'Coquette Pearl 🦢', category: 'pinterest', color: '#FFF5F7' },
+  { id: 'pin-gothic-heart', label: 'Gothic Heart 🖤', category: 'pinterest', color: '#09090B', textLight: true },
+  { id: 'pin-korean-comic', label: 'Korean Comic 💬', category: 'pinterest', color: '#FFFFFF' },
+  { id: 'pin-matcha-cafe', label: 'Matcha Café 🍵', category: 'pinterest', color: '#D8E2DC' },
+  { id: 'pin-mermaid-pearl', label: 'Mermaid Pearl 🧜‍♀️', category: 'pinterest', color: '#CCFBF1' },
+  { id: 'pin-y2k-matrix-glitch', label: 'Y2K Matrix Glitch 🟢', category: 'pinterest', color: '#09090B', textLight: true },
+
+  // 8. TREND RADAR 2026 (Internet aesthetic trends)
+  { id: 'trend-2016-rewind', label: '2016 Rewind 📻', category: 'trend-2026', color: '#58C8E8', textLight: true },
+  { id: 'trend-aliencore', label: 'Aliencore 👽', category: 'trend-2026', color: '#B7F255' },
+  { id: 'trend-cafe-camcorder', label: 'Cafe Camcorder ☕', category: 'trend-2026', color: '#A76A45', textLight: true },
+  { id: 'trend-chrome-heart', label: 'Chrome Heart 🤍', category: 'trend-2026', color: '#8B95A7' },
+  { id: 'trend-cool-blue', label: 'Cool Blue ❄️', category: 'trend-2026', color: '#EFFFFF' },
+  { id: 'trend-coquette-lace', label: 'Coquette Lace 🎀', category: 'trend-2026', color: '#FFF0F5' },
+  { id: 'trend-dark-academia', label: 'Dark Academia 📚', category: 'trend-2026', color: '#231811', textLight: true },
+  { id: 'trend-frutiger-aero', label: 'Frutiger Aero 💧', category: 'trend-2026', color: '#8EF3FF' },
+  { id: 'trend-funhaus', label: 'Funhaus 🎪', category: 'trend-2026', color: '#F8D448' },
+  { id: 'trend-glitchy-glam', label: 'Glitchy Glam ⚡', category: 'trend-2026', color: '#170724', textLight: true },
+  { id: 'trend-jelly-pop', label: 'Jelly Pop 🍬', category: 'trend-2026', color: '#FF86B4', textLight: true },
+  { id: 'trend-mystic-tarot', label: 'Mystic Tarot 🔮', category: 'trend-2026', color: '#6F4BB4', textLight: true },
+  { id: 'trend-neodeco', label: 'Neo Deco 🏛️', category: 'trend-2026', color: '#111C25', textLight: true },
+  { id: 'trend-opera-night', label: 'Opera Night 🎭', category: 'trend-2026', color: '#CFA755', textLight: true },
+  { id: 'trend-poetcore', label: 'Poetcore 🖋️', category: 'trend-2026', color: '#F5F0E7' },
+  { id: 'trend-racing-core', label: 'Racing Core 🏁', category: 'trend-2026', color: '#E53636', textLight: true },
+  { id: 'trend-shoujo-manga', label: 'Shoujo Manga 🌸', category: 'trend-2026', color: '#FFE0EF' },
+  { id: 'trend-wilderkind', label: 'Wilderkind 🌲', category: 'trend-2026', color: '#315D3D', textLight: true },
+
+  // 9. LỄ HỘI VIỆT NAM (Ngày lễ, kỷ niệm)
+  { id: 'vn-childrens-day', label: 'Quốc Tế Thiếu Nhi 🎈', category: 'viet-holiday', color: '#55B7E8', textLight: true },
+  { id: 'vn-dien-bien', label: 'Điện Biên Phủ', category: 'viet-holiday', color: '#456B34', textLight: true },
+  { id: 'vn-family-day', label: 'Ngày Gia Đình VN 👨‍👩‍👧', category: 'viet-holiday', color: '#F59F4F' },
+  { id: 'vn-gio-to-hung-vuong', label: 'Giỗ Tổ Hùng Vương', category: 'viet-holiday', color: '#684125', textLight: true },
+  { id: 'vn-ho-chi-minh-birthday', label: 'Sinh Nhật Bác Hồ', category: 'viet-holiday', color: '#B7CC8A' },
+  { id: 'vn-labor-day', label: 'Quốc Tế Lao Động 🛠️', category: 'viet-holiday', color: '#C81E35', textLight: true },
+  { id: 'vn-martyrs-day', label: 'Ngày Thương Binh Liệt Sĩ', category: 'viet-holiday', color: '#43161C', textLight: true },
+  { id: 'vn-mid-autumn', label: 'Tết Trung Thu 🌕', category: 'viet-holiday', color: '#172B5E', textLight: true },
+  { id: 'vn-reunification-day', label: 'Ngày Thống Nhất 30/4', category: 'viet-holiday', color: '#DA251D', textLight: true },
+  { id: 'vn-teachers-day', label: 'Ngày Nhà Giáo VN 🍎', category: 'viet-holiday', color: '#315D77', textLight: true },
+  { id: 'vn-tet-nguyen-dan', label: 'Tết Nguyên Đán 🧧', category: 'viet-holiday', color: '#B3132B', textLight: true },
+  { id: 'vn-womens-day', label: 'Ngày Phụ Nữ VN 20/10 🌷', category: 'viet-holiday', color: '#FFE5EE' },
+  { id: 'vn-xuan-que-huong', label: 'Xuân Quê Hương 🌸', category: 'viet-holiday', color: '#F9CBD7' },
+  { id: 'vn-army-day', label: 'Ngày Thành Lập QĐND', category: 'viet-holiday', color: '#456B34', textLight: true },
+  { id: 'vn-giong-festival', label: 'Hội Gióng', category: 'viet-holiday', color: '#684125', textLight: true },
+  { id: 'vn-national-day', label: 'Quốc Khánh 2/9 🇻🇳', category: 'viet-holiday', color: '#DA251D', textLight: true },
+  { id: 'vn-august-revolution', label: 'Cách Mạng Tháng Tám', category: 'viet-holiday', color: '#DA251D', textLight: true },
+
+  // 10. DU LỊCH VIỆT NAM (Các điểm đến nổi bật)
+  { id: 'vn-can-tho', label: 'Cần Thơ Miền Tây 🚤', category: 'viet-travel', color: '#8E9F46', textLight: true },
+  { id: 'vn-da-lat', label: 'Đà Lạt Ngàn Hoa 🌸', category: 'viet-travel', color: '#A9C3A6', textLight: true },
+  { id: 'vn-da-nang', label: 'Đà Nẵng Biển Xanh 🌊', category: 'viet-travel', color: '#63D6ED', textLight: true },
+  { id: 'vn-ha-giang', label: 'Hà Giang Cao Nguyên Đá', category: 'viet-travel', color: '#97C66A', textLight: true },
+  { id: 'vn-ha-long', label: 'Hạ Long Kỳ Quan ⛰️', category: 'viet-travel', color: '#51D3D1', textLight: true },
+  { id: 'vn-hanoi', label: 'Hà Nội Nghìn Năm', category: 'viet-travel', color: '#4E3025', textLight: true },
+  { id: 'vn-hanoi-hoan-kiem', label: 'Hồ Gươm Hà Nội', category: 'viet-travel', color: '#B45309', textLight: true },
+  { id: 'vn-ho-chi-minh-city', label: 'Sài Gòn Năng Động 🏙️', category: 'viet-travel', color: '#E76F51', textLight: true },
+  { id: 'vn-hoi-an-lantern-fest', label: 'Lễ Hội Đèn Lồng Hội An 🏮', category: 'viet-travel', color: '#7F351B', textLight: true },
+  { id: 'vn-hue', label: 'Huế Mộng Mơ', category: 'viet-travel', color: '#412454', textLight: true },
+  { id: 'vn-hue-festival', label: 'Festival Huế', category: 'viet-travel', color: '#39204E', textLight: true },
+  { id: 'vn-ly-son', label: 'Lý Sơn Đảo Tỏi', category: 'viet-travel', color: '#4BBDAE', textLight: true },
+  { id: 'vn-moc-chau', label: 'Mộc Châu Cao Nguyên 🌿', category: 'viet-travel', color: '#D9ECD3' },
+  { id: 'vn-mui-ne', label: 'Mũi Né Đồi Cát 🏖️', category: 'viet-travel', color: '#E58C35', textLight: true },
+  { id: 'vn-phong-nha', label: 'Phong Nha Kẻ Bàng', category: 'viet-travel', color: '#7DB596', textLight: true },
+  { id: 'vn-phu-quoc', label: 'Phú Quốc Đảo Ngọc 🏝️', category: 'viet-travel', color: '#F5D775', textLight: true },
+  { id: 'vn-phu-quoc-sunset', label: 'Phú Quốc Hoàng Hôn', category: 'viet-travel', color: '#EA580C', textLight: true },
+  { id: 'vn-phu-yen', label: 'Phú Yên Hoa Vàng', category: 'viet-travel', color: '#F0C74B' },
+  { id: 'vn-saigon-cho-lon', label: 'Sài Gòn Chợ Lớn', category: 'viet-travel', color: '#991B1B', textLight: true },
+  { id: 'vn-sapa', label: 'Sapa Mây Núi ⛰️', category: 'viet-travel', color: '#78964B', textLight: true },
+  { id: 'vn-tay-nguyen-gong', label: 'Tây Nguyên Cồng Chiêng 🥁', category: 'viet-travel', color: '#451A03', textLight: true },
+  { id: 'vn-vung-tau', label: 'Vũng Tàu Biển Gọi', category: 'viet-travel', color: '#6ED3E2', textLight: true },
+  { id: 'vn-chau-doc', label: 'Châu Đốc An Giang', category: 'viet-travel', color: '#8E9F46', textLight: true },
+  { id: 'vn-nha-trang', label: 'Nha Trang Biển Xanh 🌊', category: 'viet-travel', color: '#63D6ED', textLight: true },
+  { id: 'vn-quy-nhon', label: 'Quy Nhơn Biển Gọi', category: 'viet-travel', color: '#63D6ED', textLight: true },
+  { id: 'vn-mai-chau', label: 'Mai Châu Hòa Bình', category: 'viet-travel', color: '#97C66A', textLight: true },
+  { id: 'vn-ninh-binh', label: 'Ninh Bình Tràng An', category: 'viet-travel', color: '#97C66A', textLight: true },
+  { id: 'vn-cat-ba', label: 'Cát Bà Đảo Ngọc', category: 'viet-travel', color: '#51D3D1', textLight: true },
+  { id: 'vn-con-dao', label: 'Côn Đảo Bình Yên', category: 'viet-travel', color: '#4BBDAE', textLight: true },
+  { id: 'vn-da-lat-flower', label: 'Đà Lạt Festival Hoa', category: 'viet-travel', color: '#F9CBD7' },
+  { id: 'vn-hoi-an', label: 'Hội An Phố Cổ 🏮', category: 'viet-travel', color: '#7F351B', textLight: true }
 ];
 
 const backgroundsConfig = [
@@ -208,6 +334,7 @@ const qrcodeBox = document.querySelector('#qrcodeBox');
 const soundToggleBtn = document.querySelector('#soundToggleBtn');
 const clearAllBtn = document.querySelector('#clearAllBtn');
 const aiStatusBadge = document.querySelector('#aiStatusBadge');
+const switchCamBtn = document.querySelector('#switchCamBtn');
 const aiSegToggle = document.querySelector('#aiSegToggle');
 const captionInput = document.querySelector('#captionInput');
 const showDateToggle = document.querySelector('#showDateToggle');
@@ -305,29 +432,47 @@ function playShutterSound() {
   } catch (e) {}
 }
 
-// ==================== MEDIAPIPE SELFIE SEGMENTATION ====================
-let selfieSegmentation = null;
-let segmentationResults = null;
+// ==================== MEDIAPIPE IMAGE SEGMENTER (GPU-ACCELERATED) ====================
+// Bản mới của MediaPipe (tasks-vision) hỗ trợ delegate: 'GPU' để chạy suy luận AI
+// qua WebGL trên card đồ họa thật, thay vì chỉ chạy CPU/WASM như bản Selfie
+// Segmentation cũ. WASM runtime và model được ghim cùng phiên bản @1.0.1 để
+// đảm bảo tương thích giữa JS API và file wasm tải về.
+const TASKS_VISION_WASM_URL = 'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@1.0.1/wasm';
+const SELFIE_SEGMENTER_MODEL_URL = 'https://storage.googleapis.com/mediapipe-models/image_segmenter/selfie_segmenter/float16/latest/selfie_segmenter.tflite';
 
-function initMediaPipe() {
-  if (typeof SelfieSegmentation === 'undefined') {
-    aiStatusBadge.textContent = 'STANDBY';
-    aiStatusBadge.classList.add('off');
-    return;
-  }
+let imageSegmenter = null;
+let segmenterDelegate = null;
+
+function createSegmenter(vision, delegate) {
+  return ImageSegmenter.createFromOptions(vision, {
+    baseOptions: {
+      modelAssetPath: SELFIE_SEGMENTER_MODEL_URL,
+      delegate
+    },
+    runningMode: 'VIDEO',
+    outputCategoryMask: false,
+    outputConfidenceMasks: true
+  });
+}
+
+async function initMediaPipe() {
   try {
-    selfieSegmentation = new SelfieSegmentation({
-      locateFile: file => `https://cdn.jsdelivr.net/npm/@mediapipe/selfie_segmentation/${file}`
-    });
-    selfieSegmentation.setOptions({ modelSelection: 1 });
-    selfieSegmentation.onResults(results => {
-      segmentationResults = results;
-      state.isAiReady = true;
-      aiStatusBadge.textContent = 'AI SEGMENTATION ON';
-      aiStatusBadge.classList.toggle('off', !state.aiSegmentation || state.background === 'none');
-    });
+    const vision = await FilesetResolver.forVisionTasks(TASKS_VISION_WASM_URL);
+    try {
+      imageSegmenter = await createSegmenter(vision, 'GPU');
+      segmenterDelegate = 'GPU';
+    } catch (gpuErr) {
+      console.warn('Không khởi tạo được AI tách nền bằng GPU, chuyển sang CPU:', gpuErr);
+      imageSegmenter = await createSegmenter(vision, 'CPU');
+      segmenterDelegate = 'CPU';
+    }
+    state.isAiReady = true;
+    aiStatusBadge.textContent = `AI SEGMENTATION ON (${segmenterDelegate})`;
+    aiStatusBadge.classList.toggle('off', !state.aiSegmentation || state.background === 'none');
   } catch (err) {
     console.warn('Could not init MediaPipe:', err);
+    aiStatusBadge.textContent = 'STANDBY';
+    aiStatusBadge.classList.add('off');
   }
 }
 
@@ -343,8 +488,59 @@ function getCssFilterString(filterKey) {
   }
 }
 
-let lastSegTime = 0;
+let segBusy = false;
+let renderLoopStarted = false;
+let hasMask = false;
+// Canvas nhỏ giữ mask đúng độ phân giải AI trả về (thường nhỏ hơn video nhiều,
+// vd 256x256) — dựng kênh alpha từ mảng confidence đã làm mượt rồi để canvas tự
+// phóng to lúc vẽ, rẻ hơn nhiều so với lặp từng pixel ở độ phân giải video đầy đủ.
+const rawMaskCanvas = document.createElement('canvas');
+const rawMaskCtx = rawMaskCanvas.getContext('2d');
+// Mảng lưu giá trị confidence đã làm mượt theo thời gian (exponential moving average)
+// tính trực tiếp trên số liệu, không qua canvas alpha-blend — vì blend qua canvas
+// (globalAlpha + source-over) chỉ có thể LÀM TĂNG alpha tích lũy dần, không bao giờ
+// giảm lại được khi tín hiệu mới yếu đi, gây ra vệt mờ "dính" lại vĩnh viễn ở vùng
+// nền/viền từng có nhiễu nhẹ. Làm mượt trên mảng số thì tăng/giảm đúng theo tín hiệu thật.
+let smoothedValues = null;
+
+function handleSegmentationResult(result) {
+  const confMask = result.confidenceMasks && result.confidenceMasks[0];
+  if (!confMask) return;
+  const mw = confMask.width;
+  const mh = confMask.height;
+  const values = confMask.getAsFloat32Array();
+
+  if (!smoothedValues || smoothedValues.length !== values.length) {
+    smoothedValues = new Float32Array(values);
+  } else {
+    const smoothingFactor = 0.55; // trọng số khung hình mới; càng nhỏ càng mượt nhưng trễ hơn
+    for (let i = 0; i < values.length; i++) {
+      smoothedValues[i] += (values[i] - smoothedValues[i]) * smoothingFactor;
+    }
+  }
+
+  if (rawMaskCanvas.width !== mw || rawMaskCanvas.height !== mh) {
+    rawMaskCanvas.width = mw;
+    rawMaskCanvas.height = mh;
+  }
+  const imgData = rawMaskCtx.createImageData(mw, mh);
+  const px = imgData.data;
+  for (let i = 0; i < smoothedValues.length; i++) {
+    const v = smoothedValues[i];
+    const alpha = v <= 0 ? 0 : v >= 1 ? 255 : (v * 255) | 0;
+    const o = i * 4;
+    px[o] = 255;
+    px[o + 1] = 255;
+    px[o + 2] = 255;
+    px[o + 3] = alpha;
+  }
+  rawMaskCtx.putImageData(imgData, 0, 0);
+  hasMask = true;
+}
+
 function startRenderLoop() {
+  if (renderLoopStarted) return;
+  renderLoopStarted = true;
   function render() {
     if (video.readyState >= 2) {
       const vw = video.videoWidth || 1280;
@@ -358,15 +554,26 @@ function startRenderLoop() {
       }
 
       const now = performance.now();
-      if (state.aiSegmentation && state.background !== 'none' && selfieSegmentation && (now - lastSegTime > 33)) {
-        lastSegTime = now;
-        selfieSegmentation.send({ image: video }).catch(() => {});
+      // Không giới hạn cứng 33ms/lần nữa — chỉ chặn gọi chồng (segBusy) để engine GPU
+      // chạy hết công suất thật của nó. Cập nhật càng dày, mask trung bình theo thời
+      // gian càng bám sát viền thật hơn (giống kiểu temporal supersampling).
+      if (state.aiSegmentation && state.background !== 'none' && imageSegmenter && !segBusy) {
+        segBusy = true;
+        try {
+          imageSegmenter.segmentForVideo(video, Math.round(now), result => {
+            handleSegmentationResult(result);
+            segBusy = false;
+          });
+        } catch (err) {
+          console.warn('Lỗi tách nền AI:', err);
+          segBusy = false;
+        }
       }
 
       liveCtx.save();
       liveCtx.clearRect(0, 0, vw, vh);
 
-      if (state.aiSegmentation && state.background !== 'none' && segmentationResults && segmentationResults.segmentationMask) {
+      if (state.aiSegmentation && state.background !== 'none' && hasMask) {
         drawBackgroundToContext(liveCtx, vw, vh, state.background);
 
         segCtx.save();
@@ -376,7 +583,9 @@ function startRenderLoop() {
         segCtx.filter = 'none';
 
         segCtx.globalCompositeOperation = 'destination-in';
-        segCtx.drawImage(segmentationResults.segmentationMask, 0, 0, vw, vh);
+        segCtx.filter = 'contrast(4.5) blur(1.5px)';
+        segCtx.drawImage(rawMaskCanvas, 0, 0, vw, vh);
+        segCtx.filter = 'none';
         segCtx.restore();
 
         liveCtx.drawImage(segCanvas, 0, 0, vw, vh);
@@ -422,13 +631,19 @@ function drawBackgroundToContext(ctx, w, h, bgId) {
     ctx.fillStyle = grad;
     ctx.fillRect(0, 0, w, h);
   } else if (bgConfig.url) {
-    if (bgImageCache[bgConfig.url]) {
-      ctx.drawImage(bgImageCache[bgConfig.url], 0, 0, w, h);
+    const cached = bgImageCache[bgConfig.url];
+    if (cached === 'loading') {
+      ctx.fillStyle = '#bae6fd';
+      ctx.fillRect(0, 0, w, h);
+    } else if (cached) {
+      ctx.drawImage(cached, 0, 0, w, h);
     } else {
+      bgImageCache[bgConfig.url] = 'loading';
       const img = new Image();
       img.crossOrigin = 'anonymous';
-      img.src = bgConfig.url;
       img.onload = () => { bgImageCache[bgConfig.url] = img; };
+      img.onerror = () => { delete bgImageCache[bgConfig.url]; };
+      img.src = bgConfig.url;
       ctx.fillStyle = '#bae6fd';
       ctx.fillRect(0, 0, w, h);
     }
@@ -436,15 +651,32 @@ function drawBackgroundToContext(ctx, w, h, bgId) {
 }
 
 // ==================== CAMERA INITIALIZATION ====================
+let videoInputDevices = []; // danh sách camera thật (deviceId) sau khi có quyền
+let currentCameraIndex = 0;
+
+function buildVideoConstraints() {
+  // Nếu đã liệt kê được nhiều camera thật (PC nhiều webcam, hoặc mobile), ưu tiên chọn theo deviceId
+  // vì facingMode không đáng tin cậy trên desktop (webcam desktop không khai báo trước/sau).
+  const chosenDevice = videoInputDevices[currentCameraIndex];
+  if (chosenDevice) {
+    return {
+      deviceId: { exact: chosenDevice.deviceId },
+      width: { ideal: 1920, min: 1280 },
+      height: { ideal: 1080, min: 720 }
+    };
+  }
+  return {
+    facingMode: state.facingMode,
+    width: { ideal: 1920, min: 1280 },
+    height: { ideal: 1080, min: 720 }
+  };
+}
+
 async function startCamera() {
   if (state.stream) return;
   try {
     const stream = await navigator.mediaDevices.getUserMedia({
-      video: {
-        facingMode: 'user',
-        width: { ideal: 1920, min: 1280 },
-        height: { ideal: 1080, min: 720 }
-      },
+      video: buildVideoConstraints(),
       audio: false
     });
     state.stream = stream;
@@ -455,10 +687,46 @@ async function startCamera() {
     placeholder.hidden = true;
     shotStatus.textContent = 'Camera đã sẵn sàng! Tạo dáng tự tin rồi bấm Bắt đầu chụp ✦';
     startRenderLoop();
+    await refreshVideoInputDevices();
   } catch (err) {
     console.error('Lỗi camera:', err);
     shotStatus.textContent = 'Không thể mở camera — Vui lòng cấp quyền camera trong trình duyệt.';
     placeholder.hidden = false;
+  }
+}
+
+function stopCamera() {
+  if (state.stream) {
+    state.stream.getTracks().forEach(track => track.stop());
+    state.stream = null;
+  }
+  video.srcObject = null;
+}
+
+async function switchCamera() {
+  if (!state.stream || state.busy) return;
+  if (videoInputDevices.length > 1) {
+    currentCameraIndex = (currentCameraIndex + 1) % videoInputDevices.length;
+  } else {
+    // Không có danh sách deviceId (hiếm) — thử đổi facingMode như phương án dự phòng
+    state.facingMode = state.facingMode === 'user' ? 'environment' : 'user';
+  }
+  state.mirror = state.facingMode === 'user' && currentCameraIndex === 0;
+  mirrorToggle.checked = state.mirror;
+  cameraViewport.classList.toggle('mirrored', state.mirror);
+  stopCamera();
+  shotStatus.textContent = 'Đang đổi camera...';
+  await startCamera();
+}
+
+async function refreshVideoInputDevices() {
+  try {
+    if (!navigator.mediaDevices.enumerateDevices) return;
+    const devices = await navigator.mediaDevices.enumerateDevices();
+    videoInputDevices = devices.filter(d => d.kind === 'videoinput');
+    if (switchCamBtn) switchCamBtn.hidden = videoInputDevices.length < 2;
+  } catch (err) {
+    // Không xác định được số camera — ẩn nút đổi cam để tránh gây nhầm lẫn
   }
 }
 
@@ -719,6 +987,7 @@ function getFrameGraphicOverlayHtml(frameId) {
 
 function updateStripPreview() {
   const targetCount = getTargetSlotCount();
+  const layoutCfg = layoutsConfig.find(l => l.id === state.layout) || layoutsConfig[3];
 
   // 1. Clear any inline background overrides so all CSS frame classes apply cleanly
   stripPreview.style.removeProperty('background');
@@ -729,6 +998,10 @@ function updateStripPreview() {
 
   // 2. Apply frame and layout classes
   stripPreview.className = `strip frame-${state.frame} layout-${state.layout}`;
+  stripPreview.style.setProperty('--layout-width', `${layoutCfg.preview.width}px`);
+  stripPreview.style.setProperty('--layout-cols', layoutCfg.cols);
+  stripPreview.style.setProperty('--layout-gap', `${layoutCfg.preview.gap}px`);
+  stripPreview.style.setProperty('--layout-slot-aspect', layoutCfg.preview.slotAspect);
 
   // 3. Find current frame configuration
   const frameCfg = framesConfig.find(f => f.id === state.frame) || framesConfig[0];
@@ -736,10 +1009,38 @@ function updateStripPreview() {
     stripPreview.classList.add('frame-text-light');
   }
 
-  // 4. Handle custom PNG frame
+  // 4. Handle custom PNG frame or dynamic asset frame
+  const currentLayoutAsset = frameCfg && frameCfg.assets && frameCfg.assets[state.layout];
+  const currentAssetSpec = currentLayoutAsset
+    ? (FRAME_ASSET_SPECS[`${frameCfg.id}:${state.layout}`] || FRAME_ASSET_SPECS[state.layout])
+    : null;
+  const currentArtworkSpec = frameCfg && frameCfg.artwork
+    ? ARTWORK_FRAME_SPECS[`${frameCfg.id}:${state.layout}`]
+    : null;
+  const currentFrameSpec = fitFrameSpecToPhotoAspect(currentAssetSpec || currentArtworkSpec);
+  if (currentLayoutAsset) {
+    stripPreview.classList.add('has-asset-frame');
+  } else {
+    stripPreview.classList.remove('has-asset-frame');
+  }
+  stripPreview.classList.toggle('has-positioned-asset', Boolean(currentFrameSpec));
+  stripPreview.classList.toggle('has-positioned-artwork', Boolean(currentArtworkSpec));
+  if (currentFrameSpec) {
+    stripPreview.style.setProperty('padding', '0', 'important');
+    stripPreview.style.setProperty('border', '0', 'important');
+  } else {
+    stripPreview.style.removeProperty('padding');
+    stripPreview.style.removeProperty('border');
+  }
+  if (currentArtworkSpec) {
+    stripPreview.style.setProperty('--artwork-aspect', `${currentArtworkSpec.size[0]} / ${currentArtworkSpec.size[1]}`);
+  } else {
+    stripPreview.style.removeProperty('--artwork-aspect');
+  }
+
   if (state.frame === 'custom' && state.customFrameUrl) {
     stripPreview.style.setProperty('background-image', `url('${state.customFrameUrl}')`, 'important');
-    stripPreview.style.setProperty('background-size', 'cover', 'important');
+    stripPreview.style.setProperty('background-size', '100% 100%', 'important');
     stripPreview.style.setProperty('background-position', 'center', 'important');
   }
   if (frameCfg && frameCfg.artwork && (!frameCfg.layouts || frameCfg.layouts.includes(state.layout))) {
@@ -780,10 +1081,15 @@ function updateStripPreview() {
   const slotsHtml = state.slotAssignments.map((photoId, idx) => {
     const photo = state.photoPool.find(p => p.id === photoId);
     const isActive = idx === state.activeSlotIndex;
+    const assetSlot = currentFrameSpec && currentFrameSpec.slots[idx];
+    const assetVars = assetSlot
+      ? `--asset-slot-x:${(assetSlot[0] / currentFrameSpec.size[0]) * 100}%;--asset-slot-y:${(assetSlot[1] / currentFrameSpec.size[1]) * 100}%;--asset-slot-w:${(assetSlot[2] / currentFrameSpec.size[0]) * 100}%;--asset-slot-h:${(assetSlot[3] / currentFrameSpec.size[1]) * 100}%;`
+      : '';
+    const assetPosition = assetVars ? `style="${assetVars}"` : '';
 
     if (photo) {
       return `
-        <div class="strip-slot filled-slot ${isActive ? 'active-slot' : ''}" data-slot-index="${idx}">
+        <div class="strip-slot filled-slot ${isActive ? 'active-slot' : ''}" data-slot-index="${idx}" style="${assetVars}">
           <img src="${photo.src}" alt="Slot ${idx + 1}" />
           <span class="slot-index-tag">Ô ${idx + 1}</span>
           <button class="slot-remove-btn" data-remove-slot="${idx}" title="Gỡ ảnh khỏi ô này">✕</button>
@@ -791,7 +1097,7 @@ function updateStripPreview() {
       `;
     } else {
       return `
-        <div class="strip-slot empty-slot ${isActive ? 'active-slot' : ''}" data-slot-index="${idx}">
+        <div class="strip-slot empty-slot ${isActive ? 'active-slot' : ''}" data-slot-index="${idx}" ${assetPosition}>
           <span class="slot-plus">+</span>
           <span>Ô ${idx + 1}</span>
         </div>
@@ -808,6 +1114,9 @@ function updateStripPreview() {
   `).join('');
 
   const graphicsHtml = getFrameGraphicOverlayHtml(state.frame);
+  const assetOverlayHtml = currentLayoutAsset
+    ? `<img class="strip-frame-asset-overlay" src="${currentLayoutAsset}" alt="${escapeHtml(frameCfg ? frameCfg.label : 'Frame')}" />`
+    : '';
 
   stripPreview.innerHTML = `
     <div class="strip-header">SNAPBOX STUDIO</div>
@@ -817,6 +1126,7 @@ function updateStripPreview() {
       ${state.showDate ? `<div class="strip-meta">${dateStr} • ${timeStr}</div>` : ''}
       ${state.showLogo ? `<div class="strip-meta">✦ LIFE 4 CUTS SEOUL ✦</div>` : ''}
     </div>
+    ${assetOverlayHtml}
     ${graphicsHtml ? `<div class="strip-decor-layer">${graphicsHtml}</div>` : ''}
     <div class="strip-stickers-layer">${stickersHtml}</div>
   `;
@@ -826,6 +1136,12 @@ function updateStripPreview() {
   downloadBtn.disabled = !canExport;
   qrBtn.disabled = !canExport;
   printBtn.disabled = !canExport;
+  updateActiveFrameHeroCard(frameCfg);
+  fitStripToViewport();
+  // The strip width/aspect animates for 250ms when switching layouts. Measure
+  // again after that transition so wide grids (especially 3x3) stay contained.
+  requestAnimationFrame(fitStripToViewport);
+  window.setTimeout(fitStripToViewport, 280);
   refreshLucideIcons();
 }
 
@@ -927,6 +1243,84 @@ function updateShootButtonLabel() {
   const isFirstTime = state.photoPool.length === 0;
   const actionText = isFirstTime ? 'BẮT ĐẦU CHỤP' : 'CHỤP THÊM';
   shootBtn.querySelector('strong').textContent = `${actionText} (${count} TẤM)`;
+}
+
+function drawImageCover(ctx, img, x, y, w, h) {
+  const r = Math.max(w / img.width, h / img.height);
+  const nw = img.width * r, nh = img.height * r;
+  const dx = x + (w - nw) / 2, dy = y + (h - nh) / 2;
+  ctx.drawImage(img, dx, dy, nw, nh);
+}
+
+function fitFrameSpecToPhotoAspect(spec) {
+  if (!spec) return null;
+  return {
+    size: spec.size,
+    slots: spec.slots.map(([x, y, width, height]) => {
+      const fittedWidth = Math.min(width, height * PHOTO_ASPECT_RATIO);
+      const fittedHeight = fittedWidth / PHOTO_ASPECT_RATIO;
+      return [
+        x + (width - fittedWidth) / 2,
+        y + (height - fittedHeight) / 2,
+        fittedWidth,
+        fittedHeight
+      ];
+    })
+  };
+}
+
+// Corner flourishes matching each themed frame, used only when the PNG artwork/asset for the
+// current layout isn't available and we fall back to a drawn (non-raster) version of the theme.
+const ADAPTIVE_FRAME_GLYPHS = {
+  'ai-tet-an-vui': '🏮 ✦ 🏮',
+  'ai-hoi-an': '🏮 ✦ 🏮',
+  'ai-trung-thu': '🌕 🏮 🐇',
+  'ai-graduation': '🎓 ✦ 🎓',
+  'ai-womens-day': '🌸 ♡ 🌸',
+  'ai-birthday-cherry': '🍒 ♡ 🍓',
+  'ai-couple-rose': '🌹 ♡ 🌹',
+  'ai-wedding-gold': '✦ ♡ ✦',
+  'ai-kpop-neon': '★ ✦ ★',
+  'ai-scrapbook': '★ ☺ ♡',
+  'polaroid-onestep-film': '▭ ▭ ▭',
+  'onestep-burgundy-bloom': '✿ ✦ ✿'
+};
+
+function drawAdaptiveThemedFrame(ctx, w, h, frameCfg) {
+  const accent = (frameCfg && frameCfg.color) || '#795290';
+  const grad = ctx.createLinearGradient(0, 0, w, h);
+  grad.addColorStop(0, shadeColor(accent, -0.28));
+  grad.addColorStop(1, accent);
+  ctx.fillStyle = grad;
+  ctx.fillRect(0, 0, w, h);
+
+  const borderInset = Math.max(6, Math.round(w * 0.016));
+  ctx.strokeStyle = shadeColor(accent, 0.45);
+  ctx.lineWidth = Math.max(3, Math.round(w * 0.006));
+  ctx.strokeRect(borderInset, borderInset, w - borderInset * 2, h - borderInset * 2);
+
+  const glyphs = (frameCfg && ADAPTIVE_FRAME_GLYPHS[frameCfg.id]) || '✦ ✦ ✦';
+  const glyphSize = Math.max(16, Math.round(w * 0.045));
+  ctx.font = `${glyphSize}px sans-serif`;
+  ctx.fillStyle = 'rgba(255,255,255,0.95)';
+  ctx.textBaseline = 'alphabetic';
+  ctx.textAlign = 'left';
+  ctx.fillText(glyphs, borderInset + 8, borderInset + glyphSize + 4);
+  ctx.textAlign = 'right';
+  ctx.fillText(glyphs, w - borderInset - 8, h - borderInset - 10);
+  ctx.textAlign = 'left';
+}
+
+function shadeColor(hex, percent) {
+  const c = hex.replace('#', '');
+  const num = parseInt(c.length === 3 ? c.split('').map(ch => ch + ch).join('') : c, 16);
+  let r = (num >> 16) & 0xff, g = (num >> 8) & 0xff, b = num & 0xff;
+  const mix = (channel) => {
+    const target = percent < 0 ? 0 : 255;
+    return Math.round(channel + (target - channel) * Math.abs(percent));
+  };
+  r = mix(r); g = mix(g); b = mix(b);
+  return `rgb(${r}, ${g}, ${b})`;
 }
 
 function drawCustomFramePattern(ctx, w, h, frameCfg) {
@@ -1405,34 +1799,149 @@ function drawKissMark(ctx, cx, cy, size, color) {
   ctx.restore();
 }
 
+const FRAME_ASSET_SPECS = {
+  // The transparent film windows are measured from the OneStep Film Strip artwork.
+  'polaroid-onestep-film:1': { size: [1024, 1536], slots: [[118, 678, 788, 490]] },
+  'polaroid-onestep-film:2': { size: [1024, 1536], slots: [[178, 322, 668, 458], [178, 872, 668, 456]] },
+  'polaroid-onestep-film:3': { size: [780, 2014], slots: [[206, 536, 398, 404], [206, 980, 398, 400], [208, 1420, 396, 402]] },
+  'polaroid-onestep-film:4': { size: [1024, 1536], slots: [[382, 326, 260, 260], [382, 626, 260, 260], [382, 926, 260, 260], [382, 1224, 260, 260]] },
+  'onestep-burgundy-bloom:3': { size: [844, 1864], slots: [[241, 519, 393, 286], [241, 846, 393, 344], [241, 1230, 393, 334]] },
+  'onestep-burgundy-bloom:1': { size: [954, 1648], slots: [[287, 464, 413, 894]] },
+  // Measured from the transparent 16:9 windows in the rebuilt 2-cut artwork.
+  'onestep-burgundy-bloom:2': { size: [941, 1672], slots: [[157, 554, 628, 380], [157, 995, 628, 405]] },
+  'onestep-burgundy-bloom:4': { size: [1024, 1536], slots: [[144, 483, 348, 346], [535, 483, 344, 346], [144, 891, 348, 359], [535, 891, 344, 359]] },
+  'onestep-burgundy-bloom:6': { size: [1024, 1536], slots: [[257, 420, 238, 288], [531, 420, 237, 288], [257, 745, 238, 281], [531, 745, 237, 281], [257, 1060, 238, 278], [531, 1060, 237, 278]] },
+  'onestep-burgundy-bloom:8': { size: [844, 1863], slots: [[195, 472, 200, 241], [449, 472, 200, 241], [195, 757, 200, 241], [449, 757, 200, 241], [195, 1042, 200, 241], [449, 1042, 200, 241], [195, 1327, 200, 241], [449, 1327, 200, 241]] },
+  'onestep-burgundy-bloom:9': { size: [1024, 1536], slots: [[157, 482, 211, 219], [406, 482, 211, 219], [655, 482, 211, 219], [157, 746, 211, 219], [406, 746, 211, 219], [655, 746, 211, 219], [157, 1010, 211, 219], [406, 1010, 211, 219], [655, 1010, 211, 219]] },
+  '1': { size: [900, 1100], slots: [[80, 150, 740, 740]] },
+  '2': { size: [760, 1360], slots: [[60, 150, 640, 490], [60, 670, 640, 490]] },
+  '3': { size: [720, 1860], slots: [[193, 521, 407, 337], [193, 901, 407, 338], [193, 1283, 407, 338]] },
+  '4': { size: [700, 2300], slots: [[60, 140, 580, 445], [60, 615, 580, 445], [60, 1090, 580, 445], [60, 1565, 580, 445]] },
+  '4-grid': { size: [1160, 1320], slots: [[65, 140, 500, 480], [595, 140, 500, 480], [65, 650, 500, 480], [595, 650, 500, 480]] },
+  '6': { size: [1160, 1750], slots: [[65, 140, 500, 440], [595, 140, 500, 440], [65, 610, 500, 440], [595, 610, 500, 440], [65, 1080, 500, 440], [595, 1080, 500, 440]] },
+  '8': { size: [1160, 2150], slots: [[65, 140, 500, 410], [595, 140, 500, 410], [65, 580, 500, 410], [595, 580, 500, 410], [65, 1020, 500, 410], [595, 1020, 500, 410], [65, 1460, 500, 410], [595, 1460, 500, 410]] },
+  '9': { size: [1350, 1480], slots: [[60, 140, 393, 370], [476, 140, 393, 370], [892, 140, 393, 370], [60, 540, 393, 370], [476, 540, 393, 370], [892, 540, 393, 370], [60, 940, 393, 370], [476, 940, 393, 370], [892, 940, 393, 370]] }
+};
+
+const ARTWORK_FRAME_SPECS = {
+  'ai-trung-thu:4': { size: [724, 2172], slots: [[124, 348, 476, 340], [124, 732, 476, 344], [124, 1120, 476, 340], [124, 1504, 476, 344]] },
+  'ai-graduation:4': { size: [725, 2170], slots: [[108, 248, 512, 352], [108, 648, 508, 352], [108, 1048, 508, 348], [108, 1448, 508, 348]] },
+  'ai-womens-day:4': { size: [724, 2172], slots: [[72, 248, 580, 372], [72, 680, 580, 372], [72, 1112, 580, 372], [72, 1544, 580, 352]] },
+  'ai-tet-an-vui:4': { size: [724, 2172], slots: [[128, 232, 468, 364], [128, 644, 468, 372], [128, 1064, 468, 372], [128, 1484, 468, 372]] },
+  'ai-hoi-an:4': { size: [724, 2172], slots: [[160, 292, 408, 348], [160, 676, 408, 348], [160, 1064, 408, 348], [160, 1448, 408, 348]] },
+  'ai-scrapbook:4': { size: [724, 2172], slots: [[172, 216, 380, 396], [172, 640, 380, 396], [172, 1064, 380, 396], [176, 1484, 372, 392]] },
+  'ai-birthday-cherry:4': { size: [725, 2170], slots: [[104, 240, 516, 380], [104, 656, 516, 384], [104, 1076, 516, 380], [104, 1492, 516, 384]] },
+  'ai-couple-rose:4': { size: [724, 2172], slots: [[76, 140, 568, 388], [80, 600, 564, 388], [76, 1064, 568, 384], [76, 1528, 568, 384]] },
+  'ai-wedding-gold:4': { size: [725, 2170], slots: [[120, 220, 484, 376], [120, 640, 484, 376], [120, 1064, 484, 376], [120, 1488, 484, 380]] },
+  'ai-kpop-neon:4': { size: [724, 2172], slots: [[112, 312, 500, 312], [112, 672, 500, 308], [112, 1032, 500, 308], [112, 1388, 500, 312]] }
+};
+
 // ==================== HIGH RESOLUTION STRIP EXPORT (300 DPI) ====================
 async function generateHighResStrip() {
   const layoutCfg = layoutsConfig.find(l => l.id === state.layout) || layoutsConfig[3];
   const assignedPhotos = state.slotAssignments.map(id => state.photoPool.find(p => p.id === id)).filter(Boolean);
   if (!assignedPhotos.length) return null;
 
+  const frameCfg = framesConfig.find(f => f.id === state.frame) || framesConfig[0];
+  const hasAssetFrame = frameCfg && frameCfg.assets && frameCfg.assets[state.layout];
+  const assetSpec = hasAssetFrame
+    ? fitFrameSpecToPhotoAspect(FRAME_ASSET_SPECS[`${frameCfg.id}:${state.layout}`] || FRAME_ASSET_SPECS[state.layout])
+    : null;
+  const artworkSpec = frameCfg && frameCfg.artwork
+    ? fitFrameSpecToPhotoAspect(ARTWORK_FRAME_SPECS[`${frameCfg.id}:${state.layout}`])
+    : null;
+
+  if (assetSpec) {
+    const canvasW = assetSpec.size[0];
+    const canvasH = assetSpec.size[1];
+    exportCanvas.width = canvasW;
+    exportCanvas.height = canvasH;
+    const ctx = exportCanvas.getContext('2d');
+
+    // 1. Solid background color matching frame
+    ctx.fillStyle = frameCfg.color || '#1B2430';
+    ctx.fillRect(0, 0, canvasW, canvasH);
+
+    // 2. Draw user photos inside cutouts
+    for (let i = 0; i < assetSpec.slots.length; i++) {
+      const [sx, sy, sw, sh] = assetSpec.slots[i];
+      const photoId = state.slotAssignments[i];
+      const photoObj = state.photoPool.find(p => p.id === photoId);
+      if (photoObj) {
+        const img = await loadImage(photoObj.src);
+        drawImageProp(ctx, img, sx, sy, sw, sh);
+      } else {
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.25)';
+        ctx.fillRect(sx, sy, sw, sh);
+      }
+    }
+
+    // 3. Draw high-res overlay artwork on top
+    const overlayImg = await loadImage(frameCfg.assets[state.layout]);
+    ctx.drawImage(overlayImg, 0, 0, canvasW, canvasH);
+
+    // 4. Draw stickers
+    for (const s of state.stickers) {
+      const sx = (s.x / 100) * canvasW;
+      const sy = (s.y / 100) * canvasH;
+      ctx.font = '48px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(s.emoji, sx, sy);
+    }
+
+    return exportCanvas.toDataURL('image/png', 1.0);
+  }
+
+  if (artworkSpec) {
+    const [canvasW, canvasH] = artworkSpec.size;
+    exportCanvas.width = canvasW;
+    exportCanvas.height = canvasH;
+    const ctx = exportCanvas.getContext('2d');
+    const artwork = await loadImage(frameCfg.artwork);
+    ctx.drawImage(artwork, 0, 0, canvasW, canvasH);
+
+    for (let i = 0; i < artworkSpec.slots.length; i++) {
+      const [x, y, width, height] = artworkSpec.slots[i];
+      const photo = state.photoPool.find(item => item.id === state.slotAssignments[i]);
+      if (photo) {
+        drawImageCover(ctx, await loadImage(photo.src), x, y, width, height);
+      }
+    }
+
+    for (const sticker of state.stickers) {
+      ctx.font = '48px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(sticker.emoji, (sticker.x / 100) * canvasW, (sticker.y / 100) * canvasH);
+    }
+    return exportCanvas.toDataURL('image/png', 1.0);
+  }
+
   const cols = layoutCfg.cols;
   const rows = Math.ceil(layoutCfg.count / cols);
-
-  let canvasW = 900;
-  let canvasH = 1800;
-
-  if (state.layout === '1') { canvasW = 1000; canvasH = 1250; }
-  else if (state.layout === '4-grid') { canvasW = 1200; canvasH = 1400; }
-  else if (state.layout === '6') { canvasW = 1200; canvasH = 1600; }
-  else if (state.layout === '8') { canvasW = 1200; canvasH = 1800; }
-  else if (state.layout === '9') { canvasW = 1350; canvasH = 1550; }
+  const exportCfg = layoutCfg.export;
+  const canvasW = exportCfg.width;
+  const canvasH = exportCfg.height;
 
   exportCanvas.width = canvasW;
   exportCanvas.height = canvasH;
   const ctx = exportCanvas.getContext('2d');
 
   // 1. Frame background
-  const frameCfg = framesConfig.find(f => f.id === state.frame) || framesConfig[0];
-
   if (state.frame === 'custom' && state.customFrameUrl) {
     const customImg = await loadImage(state.customFrameUrl);
     ctx.drawImage(customImg, 0, 0, canvasW, canvasH);
+  } else if (frameCfg && frameCfg.artwork && (!frameCfg.layouts || frameCfg.layouts.includes(state.layout))) {
+    // The frame's designed layout: draw its painted artwork full-bleed, same as the live preview.
+    const artImg = await loadImage(frameCfg.artwork);
+    drawImageCover(ctx, artImg, 0, 0, canvasW, canvasH);
+  } else if (frameCfg && frameCfg.artwork) {
+    // Any other layout: keep the same theme via a matching drawn frame instead of losing it.
+    drawAdaptiveThemedFrame(ctx, canvasW, canvasH, frameCfg);
+  } else if (frameCfg && frameCfg.assets && !hasAssetFrame) {
+    // A raster-asset frame with no PNG for this layout: same adaptive fallback.
+    drawAdaptiveThemedFrame(ctx, canvasW, canvasH, frameCfg);
   } else {
     drawCustomFramePattern(ctx, canvasW, canvasH, frameCfg);
   }
@@ -1444,15 +1953,11 @@ async function generateHighResStrip() {
   ctx.fillText('SNAPBOX STUDIO', canvasW / 2, 45);
 
   // 3. Grid slots calculation
-  const padX = 50;
-  const topPad = 65;
-  const bottomPad = 130;
-  const gap = 20;
+  const { padX, topPad, bottomPad, gap } = exportCfg;
 
   const availW = canvasW - padX * 2 - gap * (cols - 1);
   const cellW = availW / cols;
-  const availH = canvasH - topPad - bottomPad - gap * (rows - 1);
-  const cellH = availH / rows;
+  const cellH = cellW / PHOTO_ASPECT_RATIO;
 
   for (let i = 0; i < layoutCfg.count; i++) {
     const col = i % cols;
@@ -1465,13 +1970,6 @@ async function generateHighResStrip() {
 
     if (photoObj) {
       const img = await loadImage(photoObj.src);
-      ctx.save();
-      ctx.shadowColor = 'rgba(0,0,0,0.15)';
-      ctx.shadowBlur = 8;
-      ctx.shadowOffsetY = 4;
-      ctx.fillStyle = '#000';
-      ctx.fillRect(x, y, cellW, cellH);
-      ctx.restore();
       drawImageProp(ctx, img, x, y, cellW, cellH);
     } else {
       ctx.fillStyle = 'rgba(255,255,255,0.4)';
@@ -1524,19 +2022,8 @@ function loadImage(src) {
 }
 
 function drawImageProp(ctx, img, x, y, w, h) {
-  const imgW = img.width;
-  const imgH = img.height;
-  const r = Math.min(w / imgW, h / imgH);
-  let nw = imgW * r, nh = imgH * r;
-  let cx = 1, cy = 1;
-  if (nw < w) cx = w / nw;
-  if (Math.abs(cx - 1) < 1e-14 && nh < h) cy = h / nh;
-  nw *= Math.max(cx, cy);
-  nh *= Math.max(cx, cy);
-
-  let ar = 1; if (nw > w) ar = (nw - w) / 2;
-  let br = 1; if (nh > h) br = (nh - h) / 2;
-  ctx.drawImage(img, ar / (nw / imgW), br / (nh / imgH), imgW - (ar * 2) / (nw / imgW), imgH - (br * 2) / (nh / imgH), x, y, w, h);
+  // Keep canvas exports consistent with CSS object-fit: cover/object-position: center.
+  drawImageCover(ctx, img, x, y, w, h);
 }
 
 // ==================== EXPORT & SHARING ACTIONS ====================
@@ -1597,18 +2084,16 @@ async function printStrip() {
 // ==================== EVENT HANDLERS & SETUP ====================
 function setupEventListeners() {
   enableCamBtn.addEventListener('click', startCamera);
+  if (switchCamBtn) switchCamBtn.addEventListener('click', switchCamera);
 
-  // Tabs switching in Preview Column
+  // Tabs switching: Chữ & Sticker / Xuất ảnh & In
   document.querySelectorAll('.customizer-tabs .tab-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       const targetTab = btn.dataset.tab;
       document.querySelectorAll('.customizer-tabs .tab-btn').forEach(b => b.classList.toggle('active', b === btn));
       document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
-      
-      let paneId = '#tabContentLayout';
-      if (targetTab === 'caption') paneId = '#tabContentCaption';
-      if (targetTab === 'export') paneId = '#tabContentExport';
-      
+
+      const paneId = targetTab === 'export' ? '#tabContentExport' : '#tabContentCaption';
       const targetPane = document.querySelector(paneId);
       if (targetPane) targetPane.classList.add('active');
       refreshLucideIcons();
@@ -1704,29 +2189,143 @@ function setupEventListeners() {
     if (!btn || state.busy) return;
     state.layout = btn.dataset.layout;
     renderLayoutPicker();
+    renderFramePicker();
     syncSlotAssignments();
   });
 
-  // Frame selection & categories
-  document.querySelector('.frame-filter-chips').addEventListener('click', e => {
-    const tab = e.target.closest('[data-category]');
-    if (!tab) return;
-    document.querySelectorAll('.frame-filter-chips button').forEach(t => t.classList.toggle('active', t === tab));
-    renderFramePicker(tab.dataset.category);
-  });
+  // Bật/tắt lọc khung theo bố cục đang chọn
+  const frameLayoutFilterToggleBtn = document.querySelector('#frameLayoutFilterToggleBtn');
+  if (frameLayoutFilterToggleBtn) {
+    frameLayoutFilterToggleBtn.addEventListener('click', () => {
+      frameLayoutFilterEnabled = !frameLayoutFilterEnabled;
+      renderFramePicker();
+    });
+  }
+
+  // Frame search in Tab 1
+  const frameSearchInput = document.querySelector('#frameSearchInput');
+  const clearFrameSearchBtn = document.querySelector('#clearFrameSearchBtn');
+
+  if (frameSearchInput) {
+    frameSearchInput.addEventListener('input', e => {
+      const val = e.target.value;
+      if (clearFrameSearchBtn) clearFrameSearchBtn.hidden = !val;
+      renderFramePicker(currentFrameCategory, val);
+    });
+  }
+
+  if (clearFrameSearchBtn) {
+    clearFrameSearchBtn.addEventListener('click', () => {
+      if (frameSearchInput) {
+        frameSearchInput.value = '';
+        frameSearchInput.focus();
+      }
+      clearFrameSearchBtn.hidden = true;
+      renderFramePicker(currentFrameCategory, '');
+    });
+  }
+
+  // Frame selection & categories in Tab 1
+  const frameFilterChips = document.querySelector('.frame-filter-chips');
+  if (frameFilterChips) {
+    frameFilterChips.addEventListener('click', e => {
+      const tab = e.target.closest('[data-category]');
+      if (!tab) return;
+      document.querySelectorAll('.frame-filter-chips button').forEach(t => t.classList.toggle('active', t === tab));
+      renderFramePicker(tab.dataset.category, frameSearchInput ? frameSearchInput.value : '');
+    });
+  }
 
   document.querySelector('#framePicker').addEventListener('click', e => {
     const swatch = e.target.closest('[data-frame]');
     if (!swatch) return;
-    state.frame = swatch.dataset.frame;
-    document.querySelectorAll('#framePicker .frame-swatch').forEach(s => s.classList.toggle('active', s === swatch));
-    
-    // Trigger quick tactile visual feedback on preview
-    stripPreview.classList.add('frame-changing');
-    setTimeout(() => stripPreview.classList.remove('frame-changing'), 180);
-
-    updateStripPreview();
+    selectFrame(swatch.dataset.frame);
   });
+
+  // Modal Frame Browser
+  const frameModal = document.querySelector('#frameModal');
+  const openFrameModalBtn = document.querySelector('#openFrameModalBtn');
+  const heroExpandBtn = document.querySelector('#heroExpandBtn');
+  const closeFrameModal = document.querySelector('#closeFrameModal');
+  const modalFrameSearchInput = document.querySelector('#modalFrameSearchInput');
+  const clearModalFrameSearchBtn = document.querySelector('#clearModalFrameSearchBtn');
+
+  function openFrameModal() {
+    if (!frameModal) return;
+    frameModal.hidden = false;
+    currentModalCategory = currentFrameCategory;
+    currentModalSearchTerm = '';
+    if (modalFrameSearchInput) modalFrameSearchInput.value = '';
+    if (clearModalFrameSearchBtn) clearModalFrameSearchBtn.hidden = true;
+    document.querySelectorAll('.modal-frame-chips button').forEach(t => {
+      t.classList.toggle('active', t.dataset.modalCategory === currentModalCategory);
+    });
+    renderModalFramePicker(currentModalCategory, '');
+  }
+
+  if (openFrameModalBtn) openFrameModalBtn.addEventListener('click', openFrameModal);
+  if (heroExpandBtn) heroExpandBtn.addEventListener('click', openFrameModal);
+  if (closeFrameModal) closeFrameModal.addEventListener('click', () => { frameModal.hidden = true; });
+
+  if (frameModal) {
+    frameModal.addEventListener('click', e => {
+      if (e.target === frameModal) frameModal.hidden = true;
+    });
+  }
+
+  const modalFrameChips = document.querySelector('.modal-frame-chips');
+  if (modalFrameChips) {
+    modalFrameChips.addEventListener('click', e => {
+      const tab = e.target.closest('[data-modal-category]');
+      if (!tab) return;
+      document.querySelectorAll('.modal-frame-chips button').forEach(t => t.classList.toggle('active', t === tab));
+      renderModalFramePicker(tab.dataset.modalCategory, modalFrameSearchInput ? modalFrameSearchInput.value : '');
+    });
+  }
+
+  if (modalFrameSearchInput) {
+    modalFrameSearchInput.addEventListener('input', e => {
+      const val = e.target.value;
+      if (clearModalFrameSearchBtn) clearModalFrameSearchBtn.hidden = !val;
+      renderModalFramePicker(currentModalCategory, val);
+    });
+  }
+
+  if (clearModalFrameSearchBtn) {
+    clearModalFrameSearchBtn.addEventListener('click', () => {
+      if (modalFrameSearchInput) {
+        modalFrameSearchInput.value = '';
+        modalFrameSearchInput.focus();
+      }
+      clearModalFrameSearchBtn.hidden = true;
+      renderModalFramePicker(currentModalCategory, '');
+    });
+  }
+
+  const modalFramePicker = document.querySelector('#modalFramePicker');
+  if (modalFramePicker) {
+    modalFramePicker.addEventListener('click', e => {
+      const card = e.target.closest('[data-frame]');
+      if (!card) return;
+      selectFrame(card.dataset.frame);
+      if (frameModal) frameModal.hidden = true;
+    });
+  }
+
+  // Toggle Strip Fit View Mode
+  const toggleStripFitBtn = document.querySelector('#toggleStripFitBtn');
+  const stripViewport = document.querySelector('#stripViewport');
+  if (toggleStripFitBtn && stripViewport) {
+    toggleStripFitBtn.addEventListener('click', () => {
+      const isFit = stripViewport.classList.toggle('fit-mode');
+      toggleStripFitBtn.classList.toggle('active', isFit);
+      const span = toggleStripFitBtn.querySelector('span');
+      if (span) span.textContent = isFit ? 'Vừa khung' : '100% Gốc';
+      fitStripToViewport();
+    });
+  }
+
+  window.addEventListener('resize', fitStripToViewport);
 
   customFrameInput.addEventListener('change', e => {
     const file = e.target.files[0];
@@ -1903,41 +2502,417 @@ function setupEventListeners() {
 }
 
 // ==================== RENDERING PICKERS ====================
+let currentFrameCategory = 'all';
+let currentFrameSearchTerm = '';
+let currentModalCategory = 'all';
+let currentModalSearchTerm = '';
+// Mặc định chỉ hiện khung có thiết kế hợp với bố cục đang chọn (ẩn bớt khung AI
+// bị khóa cứng vào 1 bố cục khác) — người dùng có thể bấm "Hiện tất cả" để tắt lọc.
+let frameLayoutFilterEnabled = true;
+
+function getCategoryBadgeLabel(cat) {
+  const map = {
+    'vietnam': '🇻🇳 Việt Nam',
+    'pinterest': '✨ Pinterest',
+    'world': '🌍 Thế Giới',
+    'k-studio': '🇰🇷 K-Studio',
+    'y2k': '⚡ Y2K Cyber',
+    'film': '🎞 Retro Film',
+    'cute': '🎀 Kawaii Cute',
+    'event': '🎉 Tiệc & Kỷ niệm',
+    'kpop': '💿 K-Pop Idol',
+    'viet-holiday': '🎊 Lễ hội VN',
+    'viet-travel': '🧳 Du lịch VN',
+    'trend-2026': '🔥 Trend 2026',
+    'all': 'Tất cả'
+  };
+  return map[cat] || cat;
+}
+
+function getLayoutMiniIcon(id) {
+  switch (id) {
+    case '1':
+      return `<span class="layout-mini-icon"><i class="cell" style="width:12px; height:14px;"></i></span>`;
+    case '2':
+      return `<span class="layout-mini-icon" style="flex-direction:column; gap:1.5px;"><i class="cell" style="width:12px; height:6px;"></i><i class="cell" style="width:12px; height:6px;"></i></span>`;
+    case '3':
+      return `<span class="layout-mini-icon" style="flex-direction:column; gap:1px;"><i class="cell" style="width:11px; height:3.5px;"></i><i class="cell" style="width:11px; height:3.5px;"></i><i class="cell" style="width:11px; height:3.5px;"></i></span>`;
+    case '4':
+      return `<span class="layout-mini-icon" style="flex-direction:column; gap:1px;"><i class="cell" style="width:9px; height:2.5px;"></i><i class="cell" style="width:9px; height:2.5px;"></i><i class="cell" style="width:9px; height:2.5px;"></i><i class="cell" style="width:9px; height:2.5px;"></i></span>`;
+    case '4-grid':
+      return `<span class="layout-mini-icon" style="display:grid; grid-template-columns:1fr 1fr; gap:1.5px;"><i class="cell" style="width:6px; height:6px;"></i><i class="cell" style="width:6px; height:6px;"></i><i class="cell" style="width:6px; height:6px;"></i><i class="cell" style="width:6px; height:6px;"></i></span>`;
+    case '6':
+      return `<span class="layout-mini-icon" style="display:grid; grid-template-columns:1fr 1fr; gap:1px;"><i class="cell" style="width:6px; height:4px;"></i><i class="cell" style="width:6px; height:4px;"></i><i class="cell" style="width:6px; height:4px;"></i><i class="cell" style="width:6px; height:4px;"></i><i class="cell" style="width:6px; height:4px;"></i><i class="cell" style="width:6px; height:4px;"></i></span>`;
+    case '8':
+      return `<span class="layout-mini-icon" style="display:grid; grid-template-columns:1fr 1fr; gap:1px;"><i class="cell" style="width:6px; height:3px;"></i><i class="cell" style="width:6px; height:3px;"></i><i class="cell" style="width:6px; height:3px;"></i><i class="cell" style="width:6px; height:3px;"></i><i class="cell" style="width:6px; height:3px;"></i><i class="cell" style="width:6px; height:3px;"></i><i class="cell" style="width:6px; height:3px;"></i><i class="cell" style="width:6px; height:3px;"></i></span>`;
+    case '9':
+      return `<span class="layout-mini-icon" style="display:grid; grid-template-columns:repeat(3, 1fr); gap:1px;"><i class="cell" style="width:4px; height:4px;"></i><i class="cell" style="width:4px; height:4px;"></i><i class="cell" style="width:4px; height:4px;"></i><i class="cell" style="width:4px; height:4px;"></i><i class="cell" style="width:4px; height:4px;"></i><i class="cell" style="width:4px; height:4px;"></i><i class="cell" style="width:4px; height:4px;"></i><i class="cell" style="width:4px; height:4px;"></i><i class="cell" style="width:4px; height:4px;"></i></span>`;
+    default:
+      return '';
+  }
+}
+
 function renderLayoutPicker() {
   const container = document.querySelector('#layoutPicker');
+  if (!container) return;
   container.innerHTML = layoutsConfig.map(l => `
     <button class="layout-option ${l.id === state.layout ? 'active' : ''}" data-layout="${l.id}">
+      ${getLayoutMiniIcon(l.id)}
       <strong>${l.label}</strong>
       <small>${l.sub}</small>
     </button>
   `).join('');
+  updateLayoutFrameHint();
 }
 
-function renderFramePicker(category = 'all') {
-  const container = document.querySelector('#framePicker');
-  const filtered = framesConfig.filter(f => category === 'all' || f.category === category);
-  
-  let html = filtered.map(f => `
-    <button class="frame-swatch frame-${f.id} ${f.id === state.frame ? 'active' : ''}" 
-      data-frame="${f.id}" 
-      data-label="${f.label}" 
-      title="${f.label}"
-      aria-label="Khung ${f.label}">
-    </button>
-  `).join('');
+// Khung có "artwork" (ảnh nền cố định) chỉ khớp đúng các bố cục liệt kê trong
+// f.layouts (mặc định là mọi bố cục nếu không khai báo). Khung có "assets" (PNG
+// riêng từng bố cục) chỉ khớp bố cục nào có key tương ứng. Khung màu/hoa văn CSS
+// thuần (không artwork/assets) luôn khớp mọi bố cục vì tự vẽ lại theo tỉ lệ.
+function frameSupportsLayout(frameCfg, layoutId) {
+  if (!frameCfg) return true;
+  if (frameCfg.artwork) return !frameCfg.layouts || frameCfg.layouts.includes(layoutId);
+  if (frameCfg.assets) return Boolean(frameCfg.assets[layoutId]);
+  return true;
+}
 
-  if (state.customFrameUrl) {
-    html = `
-      <button class="frame-swatch frame-custom ${state.frame === 'custom' ? 'active' : ''}" 
-        data-frame="custom" 
-        data-label="Khung riêng" 
-        title="Khung riêng PNG của bạn"
-        style="background-image: url('${state.customFrameUrl}') !important; background-size: cover !important;">
+// Trả về danh sách nhãn bố cục mà khung có thiết kế riêng, hoặc null nếu khung
+// khớp mọi bố cục (không giới hạn).
+function getFrameNativeLayoutLabels(frameCfg) {
+  if (!frameCfg) return null;
+  let ids = null;
+  if (frameCfg.artwork) ids = frameCfg.layouts || null;
+  else if (frameCfg.assets) ids = Object.keys(frameCfg.assets);
+  if (!ids) return null;
+  return ids.map(id => (layoutsConfig.find(l => l.id === id) || {}).label || id);
+}
+
+function updateLayoutFrameHint() {
+  const hintEl = document.querySelector('#layoutFrameHint');
+  if (!hintEl) return;
+  const frameCfg = framesConfig.find(f => f.id === state.frame);
+  if (state.frame === 'custom' || !frameCfg || frameSupportsLayout(frameCfg, state.layout)) {
+    hintEl.hidden = true;
+    return;
+  }
+  const nativeLabels = getFrameNativeLayoutLabels(frameCfg);
+  const nativeText = nativeLabels && nativeLabels.length ? `bố cục <b>${nativeLabels.join(', ')}</b>` : 'bố cục khác';
+  hintEl.hidden = false;
+  hintEl.innerHTML = `💡 Khung <b>${escapeHtml(frameCfg.label)}</b> chỉ có thiết kế gốc riêng cho ${nativeText} — ở bố cục này, khung sẽ dùng bản nền cùng tông màu thay thế.`;
+}
+
+function updateFrameLayoutFilterBar(hiddenCount) {
+  const bar = document.querySelector('#frameLayoutFilterBar');
+  const textEl = document.querySelector('#frameLayoutFilterText');
+  const toggleBtn = document.querySelector('#frameLayoutFilterToggleBtn');
+  if (!bar || !textEl || !toggleBtn) return;
+
+  const layoutLabel = (layoutsConfig.find(l => l.id === state.layout) || {}).label || state.layout;
+
+  if (frameLayoutFilterEnabled) {
+    if (hiddenCount > 0) {
+      bar.hidden = false;
+      textEl.textContent = `Đã ẩn ${hiddenCount} khung không hỗ trợ bố cục "${layoutLabel}"`;
+      toggleBtn.textContent = 'Hiện tất cả';
+    } else {
+      bar.hidden = true;
+    }
+  } else {
+    bar.hidden = false;
+    textEl.textContent = 'Đang hiện tất cả khung (kể cả khung không hỗ trợ bố cục này)';
+    toggleBtn.textContent = 'Lọc theo bố cục';
+  }
+}
+
+function renderFramePicker(category = currentFrameCategory, searchTerm = currentFrameSearchTerm) {
+  currentFrameCategory = category;
+  currentFrameSearchTerm = (searchTerm || '').trim().toLowerCase();
+
+  const container = document.querySelector('#framePicker');
+  if (!container) return;
+
+  const categoryAndSearchFiltered = framesConfig.filter(f => {
+    const matchCategory = (category === 'all' || f.category === category);
+    if (!matchCategory) return false;
+    if (!currentFrameSearchTerm) return true;
+    const labelLower = (f.label || '').toLowerCase();
+    const idLower = (f.id || '').toLowerCase();
+    const catLower = getCategoryBadgeLabel(f.category).toLowerCase();
+    return labelLower.includes(currentFrameSearchTerm) || idLower.includes(currentFrameSearchTerm) || catLower.includes(currentFrameSearchTerm);
+  });
+
+  // Lọc bớt khung không có thiết kế cho bố cục đang chọn (bật mặc định, có thể tắt).
+  const hiddenByLayoutCount = frameLayoutFilterEnabled
+    ? categoryAndSearchFiltered.filter(f => !frameSupportsLayout(f, state.layout)).length
+    : 0;
+  const filtered = frameLayoutFilterEnabled
+    ? categoryAndSearchFiltered.filter(f => frameSupportsLayout(f, state.layout))
+    : categoryAndSearchFiltered;
+
+  updateFrameLayoutFilterBar(hiddenByLayoutCount);
+
+  let html = '';
+
+  // Custom frame if uploaded
+  if (state.customFrameUrl && (category === 'all' || !currentFrameSearchTerm || 'khung riêng png'.includes(currentFrameSearchTerm))) {
+    const isCustomActive = state.frame === 'custom';
+    html += `
+      <button type="button" class="frame-swatch frame-swatch-card frame-custom ${isCustomActive ? 'active' : ''}"
+        data-frame="custom"
+        data-label="Khung riêng PNG"
+        title="Khung riêng PNG do bạn tải lên"
+        aria-label="Khung riêng PNG">
+        <div class="frame-thumb-box" style="background-image: url('${state.customFrameUrl}') !important; background-size: cover !important;">
+          ${isCustomActive ? '<span class="frame-active-badge"><i data-lucide="check" class="w-2.5 h-2.5"></i> Đang chọn</span>' : ''}
+        </div>
+        <div class="frame-card-meta">
+          <span class="frame-card-name">Khung riêng PNG</span>
+          <span class="frame-card-cat">Tùy biến</span>
+        </div>
       </button>
-    ` + html;
+    `;
   }
 
+  if (filtered.length === 0 && !html) {
+    const suggestTurnOffFilter = frameLayoutFilterEnabled && hiddenByLayoutCount > 0;
+    container.innerHTML = `
+      <div class="frame-empty-search">
+        <i data-lucide="search-x" class="w-8 h-8 mx-auto text-stone-300 mb-1.5"></i>
+        <p>Không tìm thấy khung ảnh nào</p>
+        <small>${suggestTurnOffFilter
+          ? 'Danh mục này chỉ có khung không hỗ trợ bố cục đang chọn — bấm "Hiện tất cả" ở trên để xem.'
+          : 'Thử tìm với từ khóa khác như "Tết", "Y2K", "Film", "Rose"...'}</small>
+      </div>
+    `;
+    refreshLucideIcons();
+    return;
+  }
+
+  html += filtered.map(f => {
+    const thumbnailAsset = f.assets && (f.assets[state.layout] || f.assets['4']);
+    const isActive = f.id === state.frame;
+    const bgStyle = thumbnailAsset
+      ? `--frame-asset-thumbnail: url('${thumbnailAsset}');`
+      : (f.color ? `background-color: ${f.color};` : '');
+
+    return `
+      <button type="button" class="frame-swatch frame-swatch-card frame-${f.id} ${thumbnailAsset ? 'has-asset-thumbnail' : ''} ${isActive ? 'active' : ''}"
+        data-frame="${f.id}"
+        data-label="${escapeHtml(f.label)}"
+        title="${escapeHtml(f.label)}"
+        aria-label="Khung ${escapeHtml(f.label)}">
+        <div class="frame-thumb-box ${thumbnailAsset ? 'has-asset-thumbnail' : ''}" style="${bgStyle}">
+          ${!thumbnailAsset ? `
+            <div class="sim-strip-slots">
+              <div class="sim-slot"></div>
+              <div class="sim-slot"></div>
+              <div class="sim-slot"></div>
+            </div>
+          ` : ''}
+          ${isActive ? '<span class="frame-active-badge"><i data-lucide="check" class="w-2.5 h-2.5"></i> Đang chọn</span>' : ''}
+        </div>
+        <div class="frame-card-meta">
+          <span class="frame-card-name">${escapeHtml(f.label)}</span>
+          <span class="frame-card-cat">${getCategoryBadgeLabel(f.category)}</span>
+          ${f.layouts ? `<span class="frame-layout-lock" title="Khung này chỉ có thiết kế gốc riêng cho bố cục liệt kê, các bố cục khác dùng bản nền cùng tông màu">🔒 ${f.layouts.map(id => (layoutsConfig.find(l => l.id === id) || {}).label || id).join(', ')}</span>` : ''}
+        </div>
+      </button>
+    `;
+  }).join('');
+
   container.innerHTML = html;
+  refreshLucideIcons();
+}
+
+function renderModalFramePicker(category = currentModalCategory, searchTerm = currentModalSearchTerm) {
+  currentModalCategory = category;
+  currentModalSearchTerm = (searchTerm || '').trim().toLowerCase();
+
+  const container = document.querySelector('#modalFramePicker');
+  const countEl = document.querySelector('#modalFrameCount');
+  if (!container) return;
+
+  const filtered = framesConfig.filter(f => {
+    const matchCategory = (category === 'all' || f.category === category);
+    if (!matchCategory) return false;
+    if (!currentModalSearchTerm) return true;
+    const labelLower = (f.label || '').toLowerCase();
+    const idLower = (f.id || '').toLowerCase();
+    const catLower = getCategoryBadgeLabel(f.category).toLowerCase();
+    return labelLower.includes(currentModalSearchTerm) || idLower.includes(currentModalSearchTerm) || catLower.includes(currentModalSearchTerm);
+  });
+
+  if (countEl) {
+    countEl.textContent = `${filtered.length} mẫu hiển thị`;
+  }
+
+  let html = '';
+
+  if (state.customFrameUrl && (category === 'all' || !currentModalSearchTerm || 'khung riêng png'.includes(currentModalSearchTerm))) {
+    const isCustomActive = state.frame === 'custom';
+    html += `
+      <div class="modal-frame-card ${isCustomActive ? 'active' : ''}" data-frame="custom">
+        <div class="modal-frame-thumb" style="background-image: url('${state.customFrameUrl}') !important; background-size: cover !important;">
+          ${isCustomActive ? '<span class="frame-active-badge"><i data-lucide="check" class="w-2.5 h-2.5"></i> Đang chọn</span>' : ''}
+        </div>
+        <strong class="modal-frame-name">Khung riêng PNG</strong>
+        <span class="modal-frame-cat">Tùy biến</span>
+      </div>
+    `;
+  }
+
+  if (filtered.length === 0 && !html) {
+    container.innerHTML = `
+      <div class="frame-empty-search" style="grid-column: 1 / -1;">
+        <i data-lucide="search-x" class="w-10 h-10 mx-auto text-stone-300 mb-2"></i>
+        <p>Không tìm thấy mẫu khung nào với từ khóa "${escapeHtml(currentModalSearchTerm)}"</p>
+        <small>Thử chọn danh mục khác hoặc xóa từ khóa tìm kiếm</small>
+      </div>
+    `;
+    refreshLucideIcons();
+    return;
+  }
+
+  html += filtered.map(f => {
+    const thumbnailAsset = f.assets && (f.assets[state.layout] || f.assets['4']);
+    const isActive = f.id === state.frame;
+    const bgStyle = thumbnailAsset
+      ? `--frame-asset-thumbnail: url('${thumbnailAsset}');`
+      : (f.color ? `background-color: ${f.color};` : '');
+
+    return `
+      <div class="modal-frame-card ${isActive ? 'active' : ''}" data-frame="${f.id}">
+        <div class="modal-frame-thumb ${thumbnailAsset ? 'has-asset-thumbnail' : ''}" style="${bgStyle}">
+          ${!thumbnailAsset ? `
+            <div class="sim-strip-slots">
+              <div class="sim-slot"></div>
+              <div class="sim-slot"></div>
+              <div class="sim-slot"></div>
+            </div>
+          ` : ''}
+          ${isActive ? '<span class="frame-active-badge"><i data-lucide="check" class="w-2.5 h-2.5"></i> Đang chọn</span>' : ''}
+        </div>
+        <strong class="modal-frame-name">${escapeHtml(f.label)}</strong>
+        <span class="modal-frame-cat">${getCategoryBadgeLabel(f.category)}</span>
+      </div>
+    `;
+  }).join('');
+
+  container.innerHTML = html;
+  refreshLucideIcons();
+}
+
+function updateActiveFrameHeroCard(frameCfg) {
+  const thumbEl = document.querySelector('#heroFrameThumb');
+  const nameEl = document.querySelector('#heroFrameName');
+  const catEl = document.querySelector('#heroFrameCategory');
+  if (!thumbEl || !nameEl) return;
+
+  if (state.frame === 'custom' && state.customFrameUrl) {
+    thumbEl.style.backgroundImage = `url('${state.customFrameUrl}')`;
+    thumbEl.style.backgroundColor = 'transparent';
+    thumbEl.innerHTML = '';
+    nameEl.textContent = 'Khung riêng PNG';
+    if (catEl) catEl.textContent = 'Tùy biến';
+    return;
+  }
+
+  const f = frameCfg || framesConfig.find(item => item.id === state.frame) || framesConfig[0];
+  const thumbnailAsset = f.assets && (f.assets[state.layout] || f.assets['4']);
+
+  if (thumbnailAsset) {
+    thumbEl.style.backgroundImage = `url('${thumbnailAsset}')`;
+    thumbEl.style.backgroundColor = 'transparent';
+    thumbEl.innerHTML = '';
+  } else {
+    thumbEl.style.backgroundImage = 'none';
+    thumbEl.style.backgroundColor = f.color || '#1B2430';
+    thumbEl.innerHTML = `
+      <div class="sim-strip-slots" style="width:60%; height:70%;">
+        <div class="sim-slot" style="height:26%;"></div>
+        <div class="sim-slot" style="height:26%;"></div>
+      </div>
+    `;
+  }
+
+  nameEl.textContent = f.label;
+  if (catEl) catEl.textContent = getCategoryBadgeLabel(f.category);
+}
+
+function selectFrame(frameId) {
+  state.frame = frameId;
+  // Không tự động đổi bố cục người dùng đang chọn nữa (trước đây khung có
+  // preferredLayout sẽ âm thầm ép đổi bố cục, gây bất ngờ). Giờ chỉ cập nhật
+  // gợi ý nếu khung này chưa có thiết kế riêng cho bố cục hiện tại.
+  renderLayoutPicker();
+
+  // Update swatches in main tab
+  document.querySelectorAll('#framePicker .frame-swatch').forEach(s => {
+    const isTarget = s.dataset.frame === frameId;
+    s.classList.toggle('active', isTarget);
+    const existingBadge = s.querySelector('.frame-active-badge');
+    if (isTarget) {
+      if (!existingBadge) {
+        const thumb = s.querySelector('.frame-thumb-box');
+        if (thumb) thumb.insertAdjacentHTML('beforeend', '<span class="frame-active-badge"><i data-lucide="check" class="w-2.5 h-2.5"></i> Đang chọn</span>');
+      }
+    } else {
+      if (existingBadge) existingBadge.remove();
+    }
+  });
+
+  // Update swatches in modal if open
+  document.querySelectorAll('#modalFramePicker .modal-frame-card').forEach(s => {
+    const isTarget = s.dataset.frame === frameId;
+    s.classList.toggle('active', isTarget);
+    const existingBadge = s.querySelector('.frame-active-badge');
+    if (isTarget) {
+      if (!existingBadge) {
+        const thumb = s.querySelector('.modal-frame-thumb');
+        if (thumb) thumb.insertAdjacentHTML('beforeend', '<span class="frame-active-badge"><i data-lucide="check" class="w-2.5 h-2.5"></i> Đang chọn</span>');
+      }
+    } else {
+      if (existingBadge) existingBadge.remove();
+    }
+  });
+
+  // Trigger quick tactile visual feedback on preview
+  stripPreview.classList.add('frame-changing');
+  setTimeout(() => stripPreview.classList.remove('frame-changing'), 180);
+
+  updateStripPreview();
+  refreshLucideIcons();
+}
+
+function fitStripToViewport() {
+  const viewport = document.querySelector('#stripViewport');
+  const stripWrapper = document.querySelector('#stripWrapper');
+  const strip = document.querySelector('#stripPreview');
+  if (!viewport || !stripWrapper || !strip) return;
+
+  if (!viewport.classList.contains('fit-mode')) {
+    stripWrapper.style.transform = 'none';
+    return;
+  }
+
+  // Fit the complete print in both directions. Layout 9 is wider than the
+  // preview column, so height-only fitting clipped its third column.
+  const viewportStyle = getComputedStyle(viewport);
+  const availableW = viewport.clientWidth
+    - parseFloat(viewportStyle.paddingLeft)
+    - parseFloat(viewportStyle.paddingRight);
+  const availableH = viewport.clientHeight
+    - parseFloat(viewportStyle.paddingTop)
+    - parseFloat(viewportStyle.paddingBottom);
+  const stripW = strip.offsetWidth;
+  const stripH = strip.offsetHeight;
+  const scale = Math.min(1, availableW / stripW, availableH / stripH);
+
+  if (scale < 1 && availableW > 150 && availableH > 150) {
+    stripWrapper.style.transform = `scale(${scale.toFixed(3)})`;
+  } else {
+    stripWrapper.style.transform = 'none';
+  }
 }
 
 function renderBackgroundPicker(category = 'all') {
@@ -1977,8 +2952,11 @@ function initApp() {
   renderLayoutPicker();
   renderFramePicker();
   renderBackgroundPicker();
-  syncSlotAssignments();
+  // Bind controls before any rendering/media work that may fail independently.
+  // This keeps layout and frame selection usable even when an optional icon,
+  // camera, or third-party AI dependency is unavailable.
   setupEventListeners();
+  syncSlotAssignments();
   updateShootButtonLabel();
   initMediaPipe();
   startCamera();

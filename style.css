@@ -13,28 +13,165 @@
   --radius-sm: 6px;
 }
 
-/* Original AI frame artwork: the four camera images sit over the prepared artwork. */
-.frame-ai-birthday-cherry{background-image:url('assets/frames/birthday-cherry.png')!important;background-size:cover!important;background-position:center!important}
-.frame-ai-couple-rose{background-image:url('assets/frames/couple-rose.png')!important;background-size:cover!important;background-position:center!important}
-.frame-ai-wedding-gold{background-image:url('assets/frames/wedding-gold.png')!important;background-size:cover!important;background-position:center!important}
-.frame-ai-kpop-neon{background-image:url('assets/frames/kpop-neon.png')!important;background-size:cover!important;background-position:center!important}
-.frame-ai-tet-an-vui{background-image:url('assets/frames/tet-an-vui.png')!important;background-size:cover!important;background-position:center!important}
-.frame-ai-hoi-an{background-image:url('assets/frames/hoi-an-lantern.png')!important;background-size:cover!important;background-position:center!important}
-.frame-ai-scrapbook{background-image:url('assets/frames/scrapbook-good-times.png')!important;background-size:cover!important;background-position:center!important}
-.frame-ai-trung-thu{background-image:url('assets/frames/trung-thu.png')!important;background-size:cover!important;background-position:center!important}
-.frame-ai-graduation{background-image:url('assets/frames/graduation.png')!important;background-size:cover!important;background-position:center!important}
-.frame-ai-womens-day{background-image:url('assets/frames/womens-day.png')!important;background-size:cover!important;background-position:center!important}
+/* RESPONSIVE ADAPTIVE STUDIO THEMES (Tương thích 100% mọi bố cục 1, 2, 3, 4, 6, 8, 9 ảnh) */
+.frame-ai-trung-thu, .strip.frame-ai-trung-thu {
+  background: radial-gradient(circle at 50% 10%, #1E3A5F 0%, #0F1E36 55%, #080D1A 100%) !important;
+  border: 3px solid #F59E0B !important;
+  box-shadow: inset 0 0 20px rgba(245, 158, 11, 0.25), 0 10px 30px rgba(0, 0, 0, 0.4) !important;
+  color: #FEF08A !important;
+}
+.frame-ai-trung-thu .strip-header, .frame-ai-trung-thu .strip-footer,
+.strip.frame-ai-trung-thu .strip-header, .strip.frame-ai-trung-thu .strip-footer { color: #FEF08A !important; }
 
-/* The AI artwork is a precision 4-cut template. Its internal photo grid matches the painted windows. */
-.strip.ai-artwork-frame.layout-4{width:210px;padding:45px 28px 70px;gap:3px;background-repeat:no-repeat!important}
-.strip.ai-artwork-frame.layout-4 .strip-header,.strip.ai-artwork-frame.layout-4 .strip-footer{visibility:hidden;height:12px;padding:0;margin:0}
-.strip.ai-artwork-frame.layout-4 .strip-photos{gap:8px}
-.strip.ai-artwork-frame.layout-4 .strip-slot{border-radius:6px;box-shadow:none;aspect-ratio:1.33}
+.frame-ai-tet-an-vui, .strip.frame-ai-tet-an-vui {
+  background: linear-gradient(180deg, #991B1B 0%, #B91C1C 50%, #7F1D1D 100%) !important;
+  border: 3px solid #F59E0B !important;
+  box-shadow: inset 0 0 16px rgba(245, 158, 11, 0.3) !important;
+  color: #FEF08A !important;
+}
+.frame-ai-tet-an-vui .strip-header, .frame-ai-tet-an-vui .strip-footer,
+.strip.frame-ai-tet-an-vui .strip-header, .strip.frame-ai-tet-an-vui .strip-footer { color: #FEF08A !important; }
 
-/* Any layout can retain the selected AI theme instead of falling back to a plain colour frame. */
-.strip.adaptive-ai-frame{background:linear-gradient(145deg,color-mix(in srgb,var(--adaptive-accent) 76%,#111 24%),var(--adaptive-accent))!important;border:3px solid color-mix(in srgb,var(--adaptive-accent) 55%,#fff 45%);box-shadow:0 10px 26px color-mix(in srgb,var(--adaptive-accent) 45%,transparent);overflow:hidden}
-.strip.adaptive-ai-frame::before,.strip.adaptive-ai-frame::after{position:absolute;z-index:1;pointer-events:none;font-size:20px;letter-spacing:5px;opacity:.95}.strip.adaptive-ai-frame::before{content:'✦  ✦  ✦';top:4px;left:11px}.strip.adaptive-ai-frame::after{content:'✦  ✦  ✦';bottom:4px;right:8px}.strip.adaptive-ai-frame .strip-header,.strip.adaptive-ai-frame .strip-photos,.strip.adaptive-ai-frame .strip-footer{position:relative;z-index:2}.strip.adaptive-ai-frame .strip-slot{border:2px solid rgba(255,255,255,.7);box-shadow:0 2px 8px rgba(0,0,0,.25)}
-.strip.adaptive-ai-frame.adaptive-ai-tet-an-vui::before,.strip.adaptive-ai-frame.adaptive-ai-hoi-an::before{content:'🏮  ✦  🏮'}.strip.adaptive-ai-frame.adaptive-ai-tet-an-vui::after{content:'✿  XUÂN  ✿'}.strip.adaptive-ai-frame.adaptive-ai-hoi-an::after{content:'✦  HỘI AN  ✦'}.strip.adaptive-ai-frame.adaptive-ai-trung-thu::before{content:'🌕  🏮  🐇'}.strip.adaptive-ai-frame.adaptive-ai-trung-thu::after{content:'✦  RẰM THÁNG TÁM  ✦'}.strip.adaptive-ai-frame.adaptive-ai-graduation::before{content:'🎓  ✦  🎓'}.strip.adaptive-ai-frame.adaptive-ai-graduation::after{content:'✦  TÂN CỬ NHÂN  ✦'}.strip.adaptive-ai-frame.adaptive-ai-womens-day::before{content:'🌸  ♡  🌸'}.strip.adaptive-ai-frame.adaptive-ai-womens-day::after{content:'✦  8 THÁNG 3  ✦'}.strip.adaptive-ai-frame.adaptive-ai-birthday-cherry::before{content:'🍒  ♡  🍓'}.strip.adaptive-ai-frame.adaptive-ai-couple-rose::before{content:'🌹  ♡  🌹'}.strip.adaptive-ai-frame.adaptive-ai-wedding-gold::before{content:'✦  ♡  ✦'}.strip.adaptive-ai-frame.adaptive-ai-kpop-neon::before{content:'★  ✦  ★'}.strip.adaptive-ai-frame.adaptive-ai-scrapbook::before{content:'★  ☺  ♡'}
+.frame-ai-graduation, .strip.frame-ai-graduation {
+  background: linear-gradient(180deg, #0A192F 0%, #172A45 50%, #020C1B 100%) !important;
+  border: 3px solid #D97706 !important;
+  color: #FEF3C7 !important;
+}
+.frame-ai-graduation .strip-header, .frame-ai-graduation .strip-footer,
+.strip.frame-ai-graduation .strip-header, .strip.frame-ai-graduation .strip-footer { color: #FEF3C7 !important; }
+
+.frame-ai-womens-day, .strip.frame-ai-womens-day {
+  background: linear-gradient(135deg, #FFF0F5 0%, #FCE7F3 50%, #FBCFE8 100%) !important;
+  border: 3px double #FDA4AF !important;
+  color: #BE185D !important;
+}
+.frame-ai-womens-day .strip-header, .frame-ai-womens-day .strip-footer,
+.strip.frame-ai-womens-day .strip-header, .strip.frame-ai-womens-day .strip-footer { color: #BE185D !important; }
+
+.frame-ai-hoi-an, .strip.frame-ai-hoi-an {
+  background: radial-gradient(circle at 50% 15%, #D97706 0%, #92400E 60%, #451A03 100%) !important;
+  border: 3px solid #FDE68A !important;
+  color: #FEF3C7 !important;
+}
+
+.frame-ai-wedding-gold, .strip.frame-ai-wedding-gold {
+  background: #FCF8ED !important;
+  border: 4px double #D97706 !important;
+  color: #92400E !important;
+}
+
+.frame-ai-couple-rose, .strip.frame-ai-couple-rose {
+  background: linear-gradient(180deg, #4A0E17 0%, #661A1D 50%, #2D080D 100%) !important;
+  border: 2px solid #FDA4AF !important;
+  color: #FFE4E6 !important;
+}
+
+.frame-ai-birthday-cherry, .strip.frame-ai-birthday-cherry {
+  background: #FFF1F2 repeating-linear-gradient(45deg, rgba(244, 63, 94, 0.08) 0, rgba(244, 63, 94, 0.08) 10px, transparent 10px, transparent 20px) !important;
+  border: 3px dashed #FDA4AF !important;
+  color: #BE123C !important;
+}
+
+.frame-ai-kpop-neon, .strip.frame-ai-kpop-neon {
+  background: linear-gradient(135deg, #1E0836 0%, #3B0764 50%, #0F021C 100%) !important;
+  border: 2.5px solid #C084FC !important;
+  box-shadow: inset 0 0 16px rgba(192, 132, 252, 0.4) !important;
+  color: #F5D0FE !important;
+}
+
+.frame-ai-scrapbook, .strip.frame-ai-scrapbook {
+  background: #FDFBF7 radial-gradient(rgba(120, 53, 15, 0.07) 1px, transparent 1px) !important;
+  background-size: 10px 10px !important;
+  border: 2px solid #E7D8C5 !important;
+  color: #451A03 !important;
+}
+
+.frame-vn-saigon-cho-lon, .strip.frame-vn-saigon-cho-lon {
+  background: radial-gradient(circle at 50% 15%, #991B1B 0%, #7F1D1D 60%, #450A0A 100%) !important;
+  border: 3px solid #F59E0B !important;
+  box-shadow: inset 0 0 16px rgba(245, 158, 11, 0.3) !important;
+  color: #FEF08A !important;
+}
+.frame-vn-saigon-cho-lon .strip-header, .frame-vn-saigon-cho-lon .strip-footer,
+.strip.frame-vn-saigon-cho-lon .strip-header, .strip.frame-vn-saigon-cho-lon .strip-footer { color: #FEF08A !important; }
+
+.frame-vn-hanoi-hoan-kiem, .strip.frame-vn-hanoi-hoan-kiem {
+  background: linear-gradient(180deg, #B45309 0%, #78350F 60%, #451A03 100%) !important;
+  border: 3px solid #FDE68A !important;
+  color: #FEF3C7 !important;
+}
+.frame-vn-hanoi-hoan-kiem .strip-header, .frame-vn-hanoi-hoan-kiem .strip-footer,
+.strip.frame-vn-hanoi-hoan-kiem .strip-header, .strip.frame-vn-hanoi-hoan-kiem .strip-footer { color: #FEF3C7 !important; }
+
+.frame-vn-tay-nguyen-gong, .strip.frame-vn-tay-nguyen-gong {
+  background: linear-gradient(135deg, #451A03 0%, #2E1002 60%, #1A0801 100%) !important;
+  border: 3px solid #D97706 !important;
+  color: #FDE68A !important;
+}
+.frame-vn-tay-nguyen-gong .strip-header, .frame-vn-tay-nguyen-gong .strip-footer,
+.strip.frame-vn-tay-nguyen-gong .strip-header, .strip.frame-vn-tay-nguyen-gong .strip-footer { color: #FDE68A !important; }
+
+.frame-vn-phu-quoc-sunset, .strip.frame-vn-phu-quoc-sunset {
+  background: linear-gradient(180deg, #EA580C 0%, #C2410C 40%, #7C2D12 80%, #1E1B4B 100%) !important;
+  border: 3px solid #FED7AA !important;
+  color: #FFF7ED !important;
+}
+.frame-vn-phu-quoc-sunset .strip-header, .frame-vn-phu-quoc-sunset .strip-footer,
+.strip.frame-vn-phu-quoc-sunset .strip-header, .strip.frame-vn-phu-quoc-sunset .strip-footer { color: #FFF7ED !important; }
+
+.frame-pin-coquette-pearl, .strip.frame-pin-coquette-pearl {
+  background: linear-gradient(180deg, #FFF5F7 0%, #FCE7F3 50%, #FDF2F8 100%) !important;
+  border: 3px double #FDA4AF !important;
+  box-shadow: inset 0 0 14px rgba(253, 164, 175, 0.35) !important;
+  color: #BE185D !important;
+}
+.frame-pin-coquette-pearl .strip-header, .frame-pin-coquette-pearl .strip-footer,
+.strip.frame-pin-coquette-pearl .strip-header, .strip.frame-pin-coquette-pearl .strip-footer { color: #BE185D !important; }
+
+.frame-pin-korean-comic, .strip.frame-pin-korean-comic {
+  background: #FFFFFF !important;
+  border: 4px solid #18181B !important;
+  box-shadow: 6px 6px 0px #18181B !important;
+  color: #18181B !important;
+}
+.frame-pin-korean-comic .strip-header, .frame-pin-korean-comic .strip-footer,
+.strip.frame-pin-korean-comic .strip-header, .strip.frame-pin-korean-comic .strip-footer { color: #18181B !important; }
+
+.frame-pin-y2k-matrix-glitch, .strip.frame-pin-y2k-matrix-glitch {
+  background: #09090B radial-gradient(rgba(34, 197, 94, 0.15) 1px, transparent 1px) !important;
+  background-size: 8px 8px !important;
+  border: 2.5px solid #22C55E !important;
+  box-shadow: inset 0 0 16px rgba(34, 197, 94, 0.3), 0 0 12px rgba(34, 197, 94, 0.25) !important;
+  color: #86EFAC !important;
+}
+.frame-pin-y2k-matrix-glitch .strip-header, .frame-pin-y2k-matrix-glitch .strip-footer,
+.strip.frame-pin-y2k-matrix-glitch .strip-header, .strip.frame-pin-y2k-matrix-glitch .strip-footer { color: #86EFAC !important; }
+
+/* Raster-artwork frames only ship a PNG overlay for their designed layout(s). On any other
+   layout (4-grid, 6, 8, 9, or a mismatched count) fall back to a same-theme drawn frame instead
+   of the plain default box, so the theme never disappears when the layout changes. */
+.frame-polaroid-onestep-film, .strip.frame-polaroid-onestep-film {
+  background: #111214 repeating-linear-gradient(90deg, rgba(255,255,255,0.08) 0, rgba(255,255,255,0.08) 3px, transparent 3px, transparent 26px) !important;
+  border: 3px solid #F4F1EA !important;
+  box-shadow: inset 0 0 0 6px #111214, 0 10px 26px rgba(0,0,0,0.4) !important;
+  color: #F4F1EA !important;
+}
+.strip.frame-polaroid-onestep-film:not(.has-asset-frame) { padding: 22px 16px !important; }
+.frame-polaroid-onestep-film .strip-header, .frame-polaroid-onestep-film .strip-footer,
+.strip.frame-polaroid-onestep-film .strip-header, .strip.frame-polaroid-onestep-film .strip-footer { color: #F4F1EA !important; }
+.strip.frame-polaroid-onestep-film:not(.has-asset-frame) .strip-header,
+.strip.frame-polaroid-onestep-film:not(.has-asset-frame) .strip-footer { display: block !important; }
+
+.frame-onestep-burgundy-bloom, .strip.frame-onestep-burgundy-bloom {
+  background: linear-gradient(160deg, #9A1129 0%, #780016 55%, #4A000E 100%) !important;
+  border: 3px solid #E8B4B8 !important;
+  box-shadow: inset 0 0 18px rgba(232, 180, 184, 0.3), 0 10px 26px rgba(0,0,0,0.35) !important;
+  color: #FCE8EA !important;
+}
+.frame-onestep-burgundy-bloom .strip-header, .frame-onestep-burgundy-bloom .strip-footer,
+.strip.frame-onestep-burgundy-bloom .strip-header, .strip.frame-onestep-burgundy-bloom .strip-footer { color: #FCE8EA !important; }
+.strip.frame-onestep-burgundy-bloom:not(.has-asset-frame) .strip-header,
+.strip.frame-onestep-burgundy-bloom:not(.has-asset-frame) .strip-footer { display: block !important; }
 
 * {
   box-sizing: border-box;
@@ -135,15 +272,21 @@ body {
   color: #166534;
 }
 
-/* ================== MAIN WORKSPACE (2 CỘT CÂN ĐỐI) ================== */
+/* ================== MAIN WORKSPACE (3 CỘT: CAMERA | BỐ CỤC ẢNH | KHUNG MÀU) ================== */
 .studio-workspace {
-  max-width: 1560px;
+  max-width: 1860px;
   margin: 16px auto 24px;
   padding: 0 20px;
   display: grid;
-  grid-template-columns: minmax(540px, 1fr) 420px;
-  gap: 22px;
+  grid-template-columns: minmax(420px, 1fr) 420px 400px;
+  gap: 20px;
   align-items: start;
+}
+
+.studio-workspace-secondary {
+  max-width: 1860px;
+  margin: 0 auto 24px;
+  padding: 0 20px;
 }
 
 /* ================== CỘT TRÁI: STAGE ================== */
@@ -166,7 +309,8 @@ body {
   position: relative;
   overflow: hidden;
   width: 100%;
-  height: 440px;
+  height: auto;
+  aspect-ratio: 16 / 9;
   background: #110e1a;
   border-radius: var(--radius-lg);
   box-shadow: inset 0 0 0 1px rgba(255,255,255,0.08);
@@ -238,6 +382,34 @@ body {
 .ai-pill.off {
   opacity: 0;
   pointer-events: none;
+}
+
+.switch-cam-btn {
+  position: absolute;
+  bottom: 14px;
+  right: 14px;
+  width: 38px;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(6px);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 50%;
+  cursor: pointer;
+  z-index: 10;
+  transition: background 0.2s, transform 0.15s;
+}
+
+.switch-cam-btn:hover {
+  background: rgba(0, 0, 0, 0.85);
+  transform: scale(1.06);
+}
+
+.switch-cam-btn:active {
+  transform: scale(0.94);
 }
 
 /* Camera & Strip Active Frame Badges */
@@ -729,13 +901,22 @@ body {
   border-radius: 3px;
 }
 
-/* ================== CỘT PHẢI: PREVIEW & CUSTOMIZER ================== */
-.preview-column {
+/* ================== CỘT GIỮA & CỘT PHẢI: BỐ CỤC ẢNH / KHUNG MÀU ================== */
+.layout-column,
+.frame-column {
   display: flex;
   flex-direction: column;
   gap: 16px;
   position: sticky;
   top: 76px;
+}
+
+.side-picker-card {
+  background: var(--studio-surface);
+  border: 1px solid var(--studio-border);
+  border-radius: var(--radius-xl);
+  padding: 16px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.04);
 }
 
 /* STRIP STAGE CARD */
@@ -745,6 +926,8 @@ body {
   border-radius: var(--radius-xl);
   padding: 14px;
   box-shadow: 0 10px 30px rgba(0,0,0,0.04);
+  display: flex;
+  flex-direction: column;
 }
 
 .strip-card-header {
@@ -777,30 +960,65 @@ body {
   margin-bottom: 10px;
 }
 
+.strip-fit-btn {
+  background: #F8F6F2;
+  border: 1px solid var(--studio-border);
+  border-radius: 999px;
+  padding: 3px 9px;
+  font: 800 10px 'Plus Jakarta Sans', sans-serif;
+  color: var(--studio-gray);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  transition: all 0.15s ease;
+}
+
+.strip-fit-btn:hover {
+  background: #fff;
+  border-color: var(--studio-pink);
+  color: var(--studio-pink);
+}
+
+.strip-fit-btn.active {
+  background: #FFF0F3;
+  border-color: #FDA4AF;
+  color: var(--studio-pink);
+}
+
 .strip-viewport {
   background: #F4ECE1;
   border: 1px dashed #D6C8B8;
   border-radius: var(--radius-lg);
-  padding: 16px 10px;
+  padding: 12px 10px;
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 380px;
-  max-height: 440px;
+  min-height: 330px;
+  max-height: 380px;
+  flex: 1;
   overflow-y: auto;
+  position: relative;
+}
+
+.strip-viewport.fit-mode {
+  overflow: hidden;
 }
 
 .strip-wrapper-3d {
   display: inline-block;
+  flex: 0 0 auto;
   box-shadow: 0 16px 36px -8px rgba(35, 20, 10, 0.22);
   border-radius: 4px;
   overflow: hidden;
-  max-width: 100%;
+  max-width: none;
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  transform-origin: center center;
 }
 
 /* DẢI ẢNH PHOTOBOOTH */
 .strip {
-  width: 190px;
+  width: var(--layout-width, 190px);
   padding: 14px 12px 20px;
   display: grid;
   gap: 8px;
@@ -816,6 +1034,40 @@ body {
   opacity: 0.85;
 }
 
+/* Polaroid OneStep uses a responsive CSS frame. The previous PNG variants put
+   the camera artwork on top of the first photo window at every layout. */
+.frame-polaroid-onestep,
+.strip.frame-polaroid-onestep {
+  background:
+    linear-gradient(90deg, transparent 0 42%, #f4c542 42% 47%, #ef4444 47% 52%, #3b82f6 52% 57%, transparent 57%) top 27px center / 100% 4px no-repeat,
+    linear-gradient(145deg, #5b0b18, #33040c 72%) !important;
+  border: 2px solid #7f1d2d !important;
+  color: #fff7ed !important;
+  box-shadow: inset 0 0 0 3px rgba(255,255,255,.08), 0 12px 28px rgba(60,7,15,.28) !important;
+}
+
+.strip.frame-polaroid-onestep .strip-header {
+  padding: 2px 4px 7px;
+  color: #fff7ed !important;
+  letter-spacing: 1px;
+}
+
+.strip.frame-polaroid-onestep .strip-header::before {
+  content: '📷';
+  margin-right: 5px;
+}
+
+.strip.frame-polaroid-onestep .strip-slot {
+  border-color: #fff7ed !important;
+  border-radius: 2px;
+}
+
+.strip.frame-polaroid-onestep .strip-footer {
+  color: #fff7ed !important;
+  border-top: 1px solid rgba(255,255,255,.2);
+  padding-top: 7px;
+}
+
 .strip-header {
   text-align: center;
   font: 800 8.5px 'DM Mono', monospace;
@@ -827,24 +1079,28 @@ body {
 
 .strip-photos {
   display: grid;
-  gap: 8px;
+  grid-template-columns: repeat(var(--layout-cols, 1), minmax(0, 1fr));
+  gap: var(--layout-gap, 8px);
   width: 100%;
 }
 
 /* INTERACTIVE SLOTS */
 .strip-slot {
   width: 100%;
+  aspect-ratio: var(--layout-slot-aspect, 1.33);
   position: relative;
   overflow: hidden;
   border-radius: 4px;
   cursor: pointer;
-  background: #fff;
+  background: #111;
   transition: all 0.2s ease;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+  border: 3px solid #FFFFFF;
+  box-sizing: border-box;
 }
 
 .strip-slot.empty-slot {
-  border: 1.5px dashed rgba(255, 255, 255, 0.5);
+  border: 1.5px dashed rgba(255, 255, 255, 0.6) !important;
   background: rgba(255, 255, 255, 0.2);
   backdrop-filter: blur(4px);
   display: flex;
@@ -856,8 +1112,8 @@ body {
 }
 
 .strip:not(.frame-text-light) .strip-slot.empty-slot {
-  border-color: rgba(0, 0, 0, 0.3);
-  background: rgba(255, 255, 255, 0.45);
+  border-color: rgba(0, 0, 0, 0.35) !important;
+  background: rgba(255, 255, 255, 0.5);
   color: #1F2937;
 }
 
@@ -868,8 +1124,8 @@ body {
 }
 
 .strip.frame-text-light .strip-slot.empty-slot {
-  border-color: rgba(255, 255, 255, 0.55);
-  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.6) !important;
+  background: rgba(255, 255, 255, 0.15);
   color: #FFFFFF;
 }
 
@@ -885,21 +1141,26 @@ body {
 }
 
 .strip-slot.filled-slot {
-  background: #000;
-  border: 2px solid rgba(255, 255, 255, 0.9);
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.22);
+  background: #17131a;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
 }
 
 .strip-slot.filled-slot img {
   width: 100%;
   height: 100%;
+  /* Canonical photo-fit rule: fill every slot without letterboxing. */
   object-fit: cover;
+  object-position: center;
   display: block;
+  position: relative;
+  z-index: 1;
 }
 
 .strip-slot.active-slot {
-  box-shadow: 0 0 0 3px var(--studio-pink), 0 0 18px rgba(255, 65, 108, 0.8) !important;
-  transform: scale(1.025);
+  outline: 3px solid var(--studio-pink);
+  outline-offset: -3px;
+  box-shadow: 0 0 14px rgba(255, 65, 108, 0.55) !important;
+  transform: none;
   z-index: 5;
 }
 
@@ -938,34 +1199,61 @@ body {
   opacity: 1;
 }
 
-/* LAYOUT RATIOS */
-.strip.layout-1 { width: 220px; }
-.strip.layout-1 .strip-slot { aspect-ratio: 0.9; }
+/* THEMED PHOTO SLOTS (Photos sit 100% "lọt lòng" in their themes) */
+.frame-ai-trung-thu .strip-slot,
+.frame-ai-tet-an-vui .strip-slot,
+.frame-pin-tet-vietnam .strip-slot,
+.frame-ai-wedding-gold .strip-slot,
+.frame-vn-dong-son .strip-slot {
+  border: 2.5px solid #F59E0B !important;
+  outline: 1px solid rgba(254, 240, 138, 0.6) !important;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4) !important;
+}
 
-.strip.layout-2 { width: 190px; }
-.strip.layout-2 .strip-slot { aspect-ratio: 1.33; }
+.frame-pin-coquette-bow .strip-slot,
+.frame-pin-cherry-sweet .strip-slot,
+.frame-ai-womens-day .strip-slot,
+.frame-ai-birthday-cherry .strip-slot {
+  border: 2.5px solid #FDA4AF !important;
+  border-radius: 6px !important;
+  box-shadow: 0 3px 10px rgba(244, 63, 94, 0.25) !important;
+}
 
-.strip.layout-3 { width: 185px; }
-.strip.layout-3 .strip-slot { aspect-ratio: 1.33; }
+.frame-pin-y2k-cyberstar .strip-slot,
+.frame-cyber-matrix .strip-slot,
+.frame-ai-kpop-neon .strip-slot {
+  border: 2px solid #22C55E !important;
+  box-shadow: 0 0 10px rgba(34, 197, 94, 0.45) !important;
+}
 
-.strip.layout-4 { width: 180px; }
-.strip.layout-4 .strip-slot { aspect-ratio: 1.33; }
+.frame-pin-black-film-35mm .strip-slot,
+.frame-sprocket-35mm .strip-slot,
+.frame-pin-90s-camcorder .strip-slot {
+  border: 1.5px solid #3F3F46 !important;
+  border-radius: 2px !important;
+}
 
-.strip.layout-4-grid { width: 220px; }
-.strip.layout-4-grid .strip-photos { grid-template-columns: repeat(2, 1fr); }
-.strip.layout-4-grid .strip-slot { aspect-ratio: 1; }
+.frame-pin-gothic-heart .strip-slot {
+  border: 2px solid #71717A !important;
+  box-shadow: 0 0 10px rgba(161, 161, 170, 0.3) !important;
+}
 
-.strip.layout-6 { width: 230px; }
-.strip.layout-6 .strip-photos { grid-template-columns: repeat(2, 1fr); }
-.strip.layout-6 .strip-slot { aspect-ratio: 1.25; }
+/* LAYOUT RATIOS & ADAPTIVE WIDTHS (Phù hợp mọi số lượng ảnh 1 đến 9) */
+.strip.layout-1 { padding: 14px 14px 28px; }
 
-.strip.layout-8 { width: 230px; }
-.strip.layout-8 .strip-photos { grid-template-columns: repeat(2, 1fr); }
-.strip.layout-8 .strip-slot { aspect-ratio: 1.3; }
+.strip.layout-2 { padding: 14px 12px 18px; }
 
-.strip.layout-9 { width: 240px; }
-.strip.layout-9 .strip-photos { grid-template-columns: repeat(3, 1fr); }
-.strip.layout-9 .strip-slot { aspect-ratio: 1; }
+.strip.layout-3 { padding: 14px 12px 18px; }
+
+.strip.layout-4 { padding: 14px 12px 18px; }
+
+.strip.layout-4-grid { padding: 14px 14px 18px; }
+
+.strip.layout-6 { padding: 14px 12px 18px; }
+
+.strip.layout-8 { padding: 14px 12px 18px; }
+
+.strip.layout-9 { padding: 14px 10px 18px; }
 
 .strip-footer {
   margin-top: 8px;
@@ -1021,13 +1309,13 @@ body {
   background: var(--studio-surface);
   border: 1px solid var(--studio-border);
   border-radius: var(--radius-xl);
-  padding: 14px;
+  padding: 16px;
   box-shadow: 0 10px 30px rgba(0,0,0,0.04);
 }
 
 .customizer-tabs {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(2, 1fr);
   background: #F4EFE6;
   border-radius: 999px;
   padding: 3px;
@@ -1071,141 +1359,695 @@ body {
   margin-bottom: 6px;
 }
 
-/* Layout picker chips */
+/* Hàng tiêu đề mục 2 (nhãn + nút xem lớn / tải PNG) — tự xuống dòng gọn gàng
+   thay vì bị ép sát nhau khi cột bên phải hẹp lại. */
+.frame-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.frame-section-header .section-label {
+  margin-bottom: 0;
+}
+
+.frame-section-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+/* Layout picker chips với biểu tượng minh họa ô ảnh — cột "Bố cục ảnh" hẹp nên
+   dùng 2 cột thay vì 4 để mỗi lựa chọn đủ rộng, dễ bấm. */
 .layout-grid-chips {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 5px;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
 }
 
 .layout-option {
-  height: 40px;
+  min-height: 52px;
+  padding: 6px 4px;
   border: 1.5px solid var(--studio-border);
-  border-radius: 8px;
+  border-radius: 12px;
   background: #fff;
   cursor: pointer;
-  font: 800 10.5px 'Plus Jakarta Sans', sans-serif;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  line-height: 1.2;
-  transition: all 0.15s ease;
+  gap: 3px;
+  transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
 }
 
-.layout-option small {
-  font-size: 7.5px;
-  font-family: 'DM Mono', monospace;
-  opacity: 0.7;
+.layout-option:hover {
+  border-color: var(--studio-pink);
+  transform: translateY(-1.5px);
+  box-shadow: 0 4px 10px rgba(255, 56, 92, 0.12);
 }
 
 .layout-option.active {
   background: var(--studio-dark);
   color: #fff;
   border-color: var(--studio-dark);
+  box-shadow: 0 4px 14px rgba(22, 19, 31, 0.25);
+}
+
+.layout-mini-icon {
+  display: flex;
+  gap: 2px;
+  align-items: center;
+  justify-content: center;
+  height: 14px;
+}
+
+.layout-mini-icon .cell {
+  background: #D5CEDD;
+  border-radius: 1.5px;
+  display: inline-block;
+  transition: background 0.15s ease;
+}
+
+.layout-option.active .layout-mini-icon .cell {
+  background: var(--studio-pink);
+}
+
+.layout-option strong {
+  font: 800 10.5px 'Plus Jakarta Sans', sans-serif;
+  line-height: 1;
+}
+
+.layout-option small {
+  font: 700 8px 'DM Mono', monospace;
+  opacity: 0.75;
 }
 
 .layout-option.active small {
   color: #ff9bad;
+  opacity: 1;
 }
 
-/* Frame categories & swatches */
+/* Gợi ý khi khung đang chọn không có thiết kế riêng cho bố cục hiện tại — báo trước
+   thay vì để người dùng bất ngờ thấy khung "đổi" khi chuyển bố cục. */
+.layout-frame-hint {
+  margin-top: 10px;
+  padding: 8px 10px;
+  background: #FFFBEB;
+  border: 1px solid #FEF3C7;
+  color: #92400E;
+  border-radius: 8px;
+  font: 700 10.5px 'Plus Jakarta Sans', sans-serif;
+  line-height: 1.4;
+}
+
+/* Nhãn nhỏ báo khung chỉ có thiết kế gốc riêng cho 1 bố cục cụ thể, hiển thị trong thẻ khung */
+.frame-layout-lock {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font: 700 8px 'DM Mono', monospace;
+  color: #92400E;
+  background: #FFFBEB;
+  border: 1px solid #FEF3C7;
+  padding: 1px 5px;
+  border-radius: 999px;
+  margin-top: 2px;
+}
+
+/* Thanh báo trạng thái lọc khung theo bố cục đang chọn */
+.frame-layout-filter-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  background: #F4EEF9;
+  border: 1px solid #E6D9F5;
+  color: #5B3E7A;
+  padding: 6px 10px;
+  border-radius: 8px;
+  font: 700 10.5px 'Plus Jakarta Sans', sans-serif;
+  margin-bottom: 8px;
+}
+
+.frame-layout-filter-toggle {
+  background: #fff;
+  border: 1px solid #E6D9F5;
+  color: #795290;
+  font: 800 10px 'Plus Jakarta Sans', sans-serif;
+  padding: 3px 9px;
+  border-radius: 999px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+}
+
+.frame-layout-filter-toggle:hover {
+  background: #795290;
+  color: #fff;
+}
+
+/* Nút tiện ích mở rộng & tải khung riêng */
+.browse-all-frames-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font: 800 10.5px 'Plus Jakarta Sans', sans-serif;
+  color: var(--studio-dark);
+  background: #FFF0F3;
+  border: 1px solid #FFD1DC;
+  padding: 6px 12px;
+  border-radius: 999px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+}
+
+.browse-all-frames-btn:hover {
+  background: #FFE4E9;
+  border-color: var(--studio-pink);
+  color: var(--studio-pink);
+  transform: translateY(-1px);
+}
+
 .custom-frame-chip {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
-  font: 800 10px 'Plus Jakarta Sans', sans-serif;
+  gap: 5px;
+  font: 800 10.5px 'Plus Jakarta Sans', sans-serif;
   color: var(--studio-pink);
-  background: var(--studio-pink-soft);
+  background: #fff;
   border: 1px solid #FFE4E8;
-  padding: 3px 8px;
+  padding: 6px 11px;
   border-radius: 999px;
   cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+}
+
+.custom-frame-chip:hover {
+  background: var(--studio-pink-soft);
+  border-color: var(--studio-pink);
 }
 
 .custom-frame-chip input {
   display: none;
 }
 
+/* Thẻ hiển thị khung đang chọn (Active Frame Hero Banner) */
+.active-frame-hero-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: linear-gradient(135deg, #FFF8F9 0%, #FAF5EE 100%);
+  border: 1.5px solid #FCD4DC;
+  border-radius: 14px;
+  padding: 8px 12px;
+  margin-bottom: 8px;
+  box-shadow: 0 4px 12px rgba(255, 65, 108, 0.06);
+}
+
+.hero-frame-preview-box {
+  width: 38px;
+  height: 52px;
+  border-radius: 6px;
+  background-color: #1B2430;
+  background-size: cover;
+  background-position: center;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.18), inset 0 0 0 1px rgba(255, 255, 255, 0.3);
+  flex-shrink: 0;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.hero-frame-meta {
+  flex: 1;
+  min-width: 0;
+}
+
+.hero-badge {
+  font: 800 8.5px 'DM Mono', monospace;
+  background: var(--studio-pink);
+  color: #fff;
+  padding: 1.5px 6px;
+  border-radius: 999px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.hero-category-tag {
+  font: 800 9px 'Plus Jakarta Sans', sans-serif;
+  color: #795290;
+  background: #F4EEF9;
+  padding: 1.5px 7px;
+  border-radius: 999px;
+}
+
+.hero-title {
+  display: block;
+  font: 800 13px 'Plus Jakarta Sans', sans-serif;
+  color: var(--studio-dark);
+  margin-top: 3px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.hero-expand-action-btn {
+  background: #fff;
+  border: 1px solid var(--studio-border);
+  color: var(--studio-gray);
+  border-radius: 999px;
+  padding: 5px 9px;
+  font: 700 10.5px 'Plus Jakarta Sans', sans-serif;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  transition: all 0.15s ease;
+  flex-shrink: 0;
+}
+
+.hero-expand-action-btn:hover {
+  background: var(--studio-dark);
+  color: #fff;
+  border-color: var(--studio-dark);
+}
+
+/* Thanh tìm kiếm khung ảnh */
+.frame-search-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #F8F6F2;
+  border: 1.5px solid var(--studio-border);
+  border-radius: 10px;
+  padding: 6px 11px;
+  margin-bottom: 8px;
+  transition: all 0.15s ease;
+}
+
+.frame-search-bar:focus-within {
+  background: #fff;
+  border-color: var(--studio-pink);
+  box-shadow: 0 0 0 3px rgba(255, 65, 108, 0.12);
+}
+
+.frame-search-bar input {
+  background: none;
+  border: none;
+  outline: none;
+  font: 700 11px 'Plus Jakarta Sans', sans-serif;
+  color: var(--studio-dark);
+  width: 100%;
+}
+
+.frame-search-bar input::placeholder {
+  color: #A8A29E;
+}
+
+.clear-search-btn {
+  background: #E7E2DA;
+  border: none;
+  color: #666;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  font-size: 10px;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+
+.clear-search-btn:hover {
+  background: #D8D1C7;
+  color: #111;
+}
+
+/* Danh mục khung & Nền */
 .frame-filter-chips, .bg-category-tabs {
   display: flex;
-  gap: 4px;
+  gap: 6px;
   overflow-x: auto;
-  margin-bottom: 8px;
-  padding-bottom: 2px;
+  margin-bottom: 10px;
+  padding: 2px 16px 6px 2px;
+  scrollbar-width: thin;
+  /* Làm mờ dần mép phải để báo hiệu còn danh mục khác có thể cuộn ngang, thay vì
+     bị cắt cứng như trước khiến người dùng tưởng chỉ có bấy nhiêu lựa chọn. */
+  mask-image: linear-gradient(to right, #000 calc(100% - 20px), transparent 100%);
+  -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 20px), transparent 100%);
 }
 
 .frame-filter-chips::-webkit-scrollbar, .bg-category-tabs::-webkit-scrollbar {
   height: 3px;
 }
 
+.frame-filter-chips::-webkit-scrollbar-thumb, .bg-category-tabs::-webkit-scrollbar-thumb {
+  background: #DFD7CB;
+  border-radius: 3px;
+}
+
 .f-chip {
   background: #F8F6F2;
   border: 1px solid var(--studio-border);
   border-radius: 999px;
-  padding: 3px 9px;
-  font: 800 10px 'Plus Jakarta Sans', sans-serif;
+  padding: 5px 12px;
+  font: 800 10.5px 'Plus Jakarta Sans', sans-serif;
   color: var(--studio-gray);
   cursor: pointer;
   white-space: nowrap;
   transition: all 0.15s ease;
+  flex-shrink: 0;
+}
+
+.f-chip:hover {
+  background: #fff;
+  border-color: var(--studio-pink);
+  color: var(--studio-pink);
 }
 
 .f-chip.active {
   background: var(--studio-dark);
   color: #fff;
   border-color: var(--studio-dark);
+  box-shadow: 0 2px 6px rgba(22, 19, 31, 0.15);
+}
+
+/* ================== THIẾT KẾ LẠI LƯỚI CHỌN KHUNG ẢNH (3 CỘT RỘNG RÃI) ================== */
+.frame-swatches-scroll-wrap {
+  position: relative;
 }
 
 .frame-swatches-grid {
   display: grid;
-  grid-template-columns: repeat(6, 1fr);
-  gap: 5px;
-  max-height: 120px;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  max-height: 420px;
   overflow-y: auto;
-  padding: 2px;
+  padding: 4px 2px 8px;
+  scrollbar-width: thin;
+  /* Làm mờ dần mép dưới thay vì cắt cứng giữa hàng thẻ — báo hiệu rõ còn nội dung
+     bên dưới có thể cuộn tiếp, trông chủ động chứ không như bị lỗi hiển thị. */
+  mask-image: linear-gradient(to bottom, #000 calc(100% - 28px), transparent 100%);
+  -webkit-mask-image: linear-gradient(to bottom, #000 calc(100% - 28px), transparent 100%);
 }
 
-.frame-swatch {
-  aspect-ratio: 1;
-  border-radius: 7px;
-  border: 2px solid transparent;
-  cursor: pointer;
-  position: relative;
+.frame-swatches-scroll-wrap::after {
+  content: '⌄ Cuộn để xem thêm';
+  position: absolute;
+  bottom: -2px;
+  left: 50%;
+  transform: translateX(-50%);
+  font: 800 9px 'DM Mono', monospace;
+  color: var(--studio-gray);
+  background: var(--studio-surface);
+  padding: 2px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--studio-border);
+  pointer-events: none;
+  opacity: 0.85;
+}
+
+.frame-swatches-grid::-webkit-scrollbar {
+  width: 5px;
+}
+
+.frame-swatches-grid::-webkit-scrollbar-thumb {
+  background: #DFD7CB;
+  border-radius: 5px;
+}
+
+.frame-swatches-grid::-webkit-scrollbar-thumb:hover {
+  background: #BCB2A2;
+}
+
+/* Thẻ khung ảnh mới: Tỉ lệ khung dọc chuẩn photobooth, tên to rõ ràng */
+.frame-swatch,
+.frame-swatch-card {
+  display: flex;
+  flex-direction: column;
+  background: #FFFFFF;
+  border: 1.5px solid var(--studio-border);
+  border-radius: 14px;
   overflow: hidden;
-  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.08), 0 2px 4px rgba(0, 0, 0, 0.04);
-  transition: transform 0.18s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.18s ease;
+  cursor: pointer;
+  padding: 7px;
+  text-align: left;
+  position: relative;
+  transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
-.frame-swatch:hover {
-  transform: scale(1.1);
+.frame-swatch:hover,
+.frame-swatch-card:hover {
+  transform: translateY(-2px);
+  border-color: var(--studio-pink);
+  box-shadow: 0 8px 18px rgba(255, 65, 108, 0.16);
   z-index: 3;
 }
 
-.frame-swatch.active {
+.frame-swatch.active,
+.frame-swatch-card.active {
+  border-color: var(--studio-pink) !important;
   outline: 2.5px solid var(--studio-pink);
-  outline-offset: 2px;
-  transform: scale(1.08);
-  box-shadow: 0 0 12px rgba(255, 65, 108, 0.6) !important;
+  outline-offset: 1px;
+  background: #FFF5F7;
+  box-shadow: 0 8px 22px rgba(255, 65, 108, 0.3) !important;
+  transform: translateY(-1px);
   z-index: 4;
 }
 
-.frame-swatch::after {
-  content: attr(data-label);
-  position: absolute;
-  left: 1px;
-  right: 1px;
-  bottom: 1px;
-  padding: 1.5px 2px;
-  border-radius: 3px;
-  color: #fff;
-  background: rgba(22, 19, 31, 0.88);
-  font: 800 6px 'Plus Jakarta Sans', sans-serif;
-  text-align: center;
-  white-space: nowrap;
+/* Khung ảnh thu nhỏ bên trong thẻ */
+.frame-thumb-box {
+  width: 100%;
+  aspect-ratio: 1 / 1.35;
+  border-radius: 8px;
+  position: relative;
   overflow: hidden;
-  text-overflow: ellipsis;
-  pointer-events: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.1), 0 2px 6px rgba(0, 0, 0, 0.08);
+  background-color: #1B2430;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.frame-thumb-box.has-asset-thumbnail {
+  background-image: var(--frame-asset-thumbnail) !important;
+  background-size: cover !important;
+  background-position: center !important;
+}
+
+.frame-thumb-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Mô phỏng các ô ảnh bên trong khung trơn màu */
+.sim-strip-slots {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  width: 72%;
+  height: 76%;
+  align-items: center;
+  justify-content: center;
+}
+
+.sim-slot {
+  width: 100%;
+  height: 28%;
+  background: rgba(255, 255, 255, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  border-radius: 2px;
+  box-shadow: inset 0 0 2px rgba(0, 0, 0, 0.2);
+}
+
+/* Huy hiệu Đang chọn phát sáng */
+.frame-active-badge {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  background: linear-gradient(135deg, #FF385C, #E01940);
+  color: #fff;
+  font: 800 8px 'Plus Jakarta Sans', sans-serif;
+  padding: 2px 6px;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  box-shadow: 0 2px 8px rgba(255, 56, 92, 0.4);
+  z-index: 3;
+}
+
+/* Phần chữ tên khung to rõ ràng */
+.frame-card-meta {
+  padding-top: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.frame-card-name {
+  font: 800 11px 'Plus Jakarta Sans', sans-serif;
+  color: var(--studio-dark);
+  line-height: 1.25;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  word-break: break-word;
+}
+
+.frame-card-cat {
+  font: 700 8.5px 'DM Mono', monospace;
+  color: var(--studio-gray);
+  opacity: 0.8;
+  margin-top: 1px;
+  text-transform: uppercase;
+}
+
+.frame-swatch.active .frame-card-name,
+.frame-swatch-card.active .frame-card-name {
+  color: var(--studio-pink);
+}
+
+/* Trạng thái không tìm thấy kết quả */
+.frame-empty-search {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 30px 12px;
+  color: var(--studio-gray);
+}
+.frame-empty-search p {
+  font: 800 12.5px 'Plus Jakarta Sans', sans-serif;
+  color: var(--studio-dark);
+  margin-bottom: 3px;
+}
+.frame-empty-search small {
+  font-size: 11px;
+  opacity: 0.8;
+}
+
+/* ================== POPUP MODAL THƯ VIỆN KHUNG ẢNH LỚN ================== */
+.frame-modal-card {
+  max-height: 88vh;
+  display: flex;
+  flex-direction: column;
+  padding: 20px 24px;
+}
+
+.modal-search-wrap {
+  margin-top: 12px;
+  margin-bottom: 8px;
+}
+
+.modal-frame-chips {
+  margin-bottom: 12px;
+}
+
+.modal-frames-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  overflow-y: auto;
+  padding: 4px 4px 14px;
+  max-height: 52vh;
+  scrollbar-width: thin;
+}
+
+.modal-frames-grid::-webkit-scrollbar {
+  width: 6px;
+}
+.modal-frames-grid::-webkit-scrollbar-thumb {
+  background: #DFD7CB;
+  border-radius: 6px;
+}
+
+.modal-frame-card {
+  display: flex;
+  flex-direction: column;
+  background: #FFFFFF;
+  border: 2px solid var(--studio-border);
+  border-radius: 14px;
+  overflow: hidden;
+  cursor: pointer;
+  padding: 8px;
+  text-align: left;
+  position: relative;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.modal-frame-card:hover {
+  transform: translateY(-3px);
+  border-color: var(--studio-pink);
+  box-shadow: 0 10px 24px rgba(255, 65, 108, 0.18);
+}
+
+.modal-frame-card.active {
+  border-color: var(--studio-pink) !important;
+  outline: 3px solid var(--studio-pink);
+  outline-offset: 1px;
+  background: #FFF5F7;
+  box-shadow: 0 10px 26px rgba(255, 65, 108, 0.3) !important;
+}
+
+.modal-frame-thumb {
+  width: 100%;
+  aspect-ratio: 1 / 1.38;
+  border-radius: 10px;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #1B2430;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.1), 0 3px 10px rgba(0, 0, 0, 0.1);
+}
+
+.modal-frame-thumb.has-asset-thumbnail {
+  background-image: var(--frame-asset-thumbnail) !important;
+  background-size: cover !important;
+  background-position: center !important;
+}
+
+.modal-frame-name {
+  font: 800 12.5px 'Plus Jakarta Sans', sans-serif;
+  color: var(--studio-dark);
+  margin-top: 7px;
+  line-height: 1.3;
+}
+
+.modal-frame-cat {
+  font: 800 9.5px 'DM Mono', monospace;
+  color: #795290;
+  background: #F4EEF9;
+  padding: 1.5px 7px;
+  border-radius: 999px;
+  align-self: flex-start;
+  margin-top: 3px;
+}
+
+.modal-footer-tip {
+  padding-top: 10px;
+  border-top: 1px solid var(--studio-border);
+  margin-top: 6px;
 }
 
 /* Tab 2: Caption & Stickers */
@@ -1827,6 +2669,59 @@ body {
 .frame-pin-black-film-35mm .strip-footer, .frame-pin-black-film-35mm .strip-header,
 .strip.frame-pin-black-film-35mm .strip-footer, .strip.frame-pin-black-film-35mm .strip-header { color: #E4E4E7 !important; }
 
+.frame-pin-90s-camcorder, .strip.frame-pin-90s-camcorder {
+  background: #09090B !important;
+  border: 2px solid #3F3F46 !important;
+  color: #FFFFFF !important;
+}
+.frame-pin-90s-camcorder .strip-footer, .frame-pin-90s-camcorder .strip-header,
+.strip.frame-pin-90s-camcorder .strip-footer, .strip.frame-pin-90s-camcorder .strip-header { color: #FFFFFF !important; }
+
+.frame-pin-bunny-daisy, .strip.frame-pin-bunny-daisy {
+  background-color: #ECFDF5 !important;
+  background-image: radial-gradient(circle at 20% 20%, rgba(16, 185, 129, 0.1) 0 3px, transparent 4px),
+    radial-gradient(circle at 80% 80%, rgba(245, 158, 11, 0.12) 0 3px, transparent 4px) !important;
+  border: 2px solid #A7F3D0 !important;
+  color: #065F46 !important;
+}
+.frame-pin-bunny-daisy .strip-footer, .frame-pin-bunny-daisy .strip-header,
+.strip.frame-pin-bunny-daisy .strip-footer, .strip.frame-pin-bunny-daisy .strip-header { color: #065F46 !important; }
+
+.frame-pin-gothic-heart, .strip.frame-pin-gothic-heart {
+  background: #09090B !important;
+  border: 2px solid #71717A !important;
+  color: #E4E4E7 !important;
+}
+.frame-pin-gothic-heart .strip-footer, .frame-pin-gothic-heart .strip-header,
+.strip.frame-pin-gothic-heart .strip-footer, .strip.frame-pin-gothic-heart .strip-header { color: #E4E4E7 !important; }
+
+.frame-pin-cherry-sweet, .strip.frame-pin-cherry-sweet {
+  background-color: #FFF1F2 !important;
+  background-image: linear-gradient(90deg, rgba(244, 63, 94, 0.08) 50%, transparent 50%),
+    linear-gradient(rgba(244, 63, 94, 0.08) 50%, transparent 50%) !important;
+  background-size: 16px 16px !important;
+  border: 2px solid #FDA4AF !important;
+  color: #BE123C !important;
+}
+.frame-pin-cherry-sweet .strip-footer, .frame-pin-cherry-sweet .strip-header,
+.strip.frame-pin-cherry-sweet .strip-footer, .strip.frame-pin-cherry-sweet .strip-header { color: #BE123C !important; }
+
+.frame-pin-mermaid-pearl, .strip.frame-pin-mermaid-pearl {
+  background: linear-gradient(135deg, #CCFBF1 0%, #E0F2FE 50%, #F3E8FF 100%) !important;
+  border: 2px solid #99F6E4 !important;
+  color: #0E7490 !important;
+}
+.frame-pin-mermaid-pearl .strip-footer, .frame-pin-mermaid-pearl .strip-header,
+.strip.frame-pin-mermaid-pearl .strip-footer, .strip.frame-pin-mermaid-pearl .strip-header { color: #0E7490 !important; }
+
+.frame-pin-matcha-cafe, .strip.frame-pin-matcha-cafe {
+  background: #D8E2DC !important;
+  border: 2px solid #B7C9BE !important;
+  color: #2E4F3E !important;
+}
+.frame-pin-matcha-cafe .strip-footer, .frame-pin-matcha-cafe .strip-header,
+.strip.frame-pin-matcha-cafe .strip-footer, .strip.frame-pin-matcha-cafe .strip-header { color: #2E4F3E !important; }
+
 /* STRIP DECORATIVE OVERLAY LAYER (Pinterest Vector Details) */
 .strip-decor-layer {
   position: absolute;
@@ -2131,6 +3026,470 @@ body {
   margin: 3px 0;
 }
 
+/* 13. Đêm Hội Trăng Rằm (Trung Thu) */
+.decor-trung-thu-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 5px 8px;
+  font-weight: 800;
+  font-size: 10px;
+  color: #FEF08A;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.7);
+  letter-spacing: 0.5px;
+}
+.decor-trung-thu-footer {
+  text-align: center;
+  font-weight: 800;
+  font-size: 9.5px;
+  padding: 5px 8px;
+  color: #FEF08A;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.7);
+}
+
+/* 14. 90s Camcorder VHS */
+.camcorder-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 5px 10px;
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  font-weight: 800;
+  color: #FFFFFF;
+  background: rgba(0, 0, 0, 0.65);
+}
+.cam-rec {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.rec-dot {
+  color: #EF4444;
+  font-size: 11px;
+  animation: recBlink 1s infinite;
+}
+@keyframes recBlink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.2; }
+}
+.camcorder-footer {
+  display: flex;
+  justify-content: space-between;
+  padding: 4px 10px;
+  font-family: 'DM Mono', monospace;
+  font-size: 8.5px;
+  color: #E4E4E7;
+  background: rgba(0, 0, 0, 0.65);
+}
+
+/* 15. Bunny & Daisy */
+.bunny-header {
+  text-align: center;
+  font-weight: 800;
+  font-size: 10px;
+  padding: 5px 8px;
+  color: #065F46;
+}
+.bunny-footer {
+  text-align: center;
+  font-weight: 700;
+  font-size: 9px;
+  padding: 4px 8px;
+  color: #047857;
+}
+
+/* 16. Gothic Dark Heart */
+.gothic-header {
+  text-align: center;
+  font-weight: 900;
+  font-size: 10px;
+  padding: 5px 8px;
+  color: #E4E4E7;
+  letter-spacing: 1px;
+}
+.gothic-footer {
+  text-align: center;
+  font-weight: 700;
+  font-size: 9px;
+  padding: 4px 8px;
+  color: #A1A1AA;
+}
+
+/* 17. Sweet Cherry Vichy */
+.cherry-header {
+  text-align: center;
+  font-weight: 800;
+  font-size: 10.5px;
+  padding: 5px 8px;
+  color: #BE123C;
+}
+.cherry-footer {
+  text-align: center;
+  font-weight: 700;
+  font-size: 9px;
+  padding: 4px 8px;
+  color: #E11D48;
+}
+
+/* 18. Mermaid Ocean Pearl */
+.mermaid-header {
+  text-align: center;
+  font-weight: 800;
+  font-size: 10px;
+  padding: 5px 8px;
+  color: #0E7490;
+}
+.mermaid-footer {
+  text-align: center;
+  font-weight: 700;
+  font-size: 9px;
+  padding: 4px 8px;
+  color: #155E75;
+}
+
+/* 19. Matcha Latte Korean Studio */
+.matcha-header {
+  text-align: center;
+  font-weight: 800;
+  font-size: 10px;
+  padding: 5px 8px;
+  color: #2E4F3E;
+}
+.matcha-footer {
+  text-align: center;
+  font-weight: 700;
+  font-size: 9px;
+  padding: 4px 8px;
+  color: #3F6A54;
+}
+
+/* 20. Kỷ Yếu & Sự Kiện */
+.grad-header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 8px;
+  font-weight: 800;
+  font-size: 10px;
+  color: #FEF3C7;
+}
+.grad-footer {
+  text-align: center;
+  font-weight: 700;
+  font-size: 9px;
+  padding: 4px 8px;
+  color: #FDE047;
+}
+.womens-header {
+  text-align: center;
+  font-weight: 800;
+  font-size: 10px;
+  padding: 5px 8px;
+  color: #BE185D;
+}
+.womens-footer {
+  text-align: center;
+  font-weight: 700;
+  font-size: 9px;
+  padding: 4px 8px;
+  color: #DB2777;
+}
+.hoian-header {
+  text-align: center;
+  font-weight: 800;
+  font-size: 10px;
+  padding: 5px 8px;
+  color: #FEF3C7;
+}
+.hoian-footer {
+  text-align: center;
+  font-weight: 700;
+  font-size: 9px;
+  padding: 4px 8px;
+  color: #FDE68A;
+}
+
+/* Dynamic Layout Adapters (Polaroid Chin & Wide Headers) */
+.polaroid-chin {
+  padding-top: 14px !important;
+  padding-bottom: 12px !important;
+  font-size: 11px !important;
+}
+.wide-header {
+  padding-left: 14px !important;
+  padding-right: 14px !important;
+  font-size: 11px !important;
+  letter-spacing: 0.5px !important;
+}
+.wide-footer {
+  padding-left: 14px !important;
+  padding-right: 14px !important;
+  font-size: 10px !important;
+}
+
+/* ================== DYNAMIC ASSET FRAMES SYSTEM (15 THEMES x 8 LAYOUTS) ================== */
+.strip.has-asset-frame {
+  position: relative;
+  background-color: transparent !important;
+  background-image: none !important;
+  border-radius: 6px;
+  overflow: hidden;
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.35);
+}
+
+.strip-frame-asset-overlay {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: fill;
+  pointer-events: none;
+  z-index: 6;
+}
+
+/* Asset frames use their PNG's exact transparent-window coordinates. This avoids
+   the drift caused by padding and grid gaps in long film-strip layouts. */
+.strip.has-positioned-asset .strip-photos {
+  position: absolute;
+  inset: 0;
+  display: block !important;
+  width: auto;
+  z-index: 2;
+}
+.strip.has-positioned-asset {
+  border: 0 !important;
+}
+.strip.has-positioned-asset .strip-slot {
+  position: absolute;
+  left: var(--asset-slot-x);
+  top: var(--asset-slot-y);
+  width: var(--asset-slot-w);
+  height: var(--asset-slot-h);
+  aspect-ratio: auto !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+.strip.has-positioned-asset .strip-slot.active-slot {
+  outline: 2px solid var(--studio-pink);
+  outline-offset: -2px;
+  transform: none;
+}
+.strip.has-positioned-asset .strip-slot.empty-slot {
+  border: 1.5px dashed rgba(255, 255, 255, 0.72) !important;
+  background: rgba(255, 255, 255, 0.10) !important;
+}
+.strip.has-positioned-asset .slot-index-tag {
+  opacity: 0;
+}
+.strip.has-positioned-asset .strip-slot:hover .slot-index-tag {
+  opacity: 1;
+}
+
+.strip.has-positioned-artwork {
+  aspect-ratio: var(--artwork-aspect);
+  padding: 0 !important;
+  display: block;
+  background-size: 100% 100% !important;
+  background-position: center !important;
+}
+
+.strip.has-positioned-artwork .strip-header,
+.strip.has-positioned-artwork .strip-footer {
+  display: none !important;
+}
+
+.strip.has-asset-frame .strip-header,
+.strip.has-asset-frame .strip-footer {
+  display: none !important;
+}
+
+/* Precision padding calibration matching Python generator LAYOUT_SPECS */
+.strip.has-asset-frame.layout-1 {
+  width: 216px;
+  aspect-ratio: 900 / 1100;
+  padding: 13.64% 8.89% 19.09% 8.89% !important;
+}
+.strip.has-asset-frame.layout-1 .strip-slot {
+  aspect-ratio: 740 / 740;
+}
+
+.strip.has-asset-frame.layout-2 {
+  width: 190px;
+  aspect-ratio: 760 / 1360;
+  padding: 11.03% 7.89% 14.71% 7.89% !important;
+}
+.strip.has-asset-frame.layout-2 .strip-photos {
+  gap: 2.21%;
+}
+.strip.has-asset-frame.layout-2 .strip-slot {
+  aspect-ratio: 640 / 490;
+}
+
+.strip.has-asset-frame.layout-3 {
+  width: 180px;
+  aspect-ratio: 720 / 1860;
+  padding: 28.01% 16.67% 12.90% 26.81% !important;
+}
+.strip.has-asset-frame.layout-3 .strip-photos {
+  gap: 2.36%;
+}
+.strip.has-asset-frame.layout-3 .strip-slot {
+  aspect-ratio: 407 / 338;
+}
+
+/* OneStep Film Strip: each generated variant has precisely aligned film windows. */
+.strip.frame-polaroid-onestep-film.has-asset-frame.layout-1 {
+  width: 216px;
+  aspect-ratio: 1024 / 1536;
+  padding: 0 !important;
+  display: block;
+}
+.strip.frame-polaroid-onestep-film.has-asset-frame.layout-1 .strip-slot {
+  aspect-ratio: 795 / 493;
+}
+
+.strip.frame-polaroid-onestep-film.has-asset-frame.layout-2 {
+  width: 190px;
+  aspect-ratio: 1024 / 1536;
+  padding: 0 !important;
+  display: block;
+}
+.strip.frame-polaroid-onestep-film.has-asset-frame.layout-2 .strip-photos {
+  gap: 5.30%;
+}
+.strip.frame-polaroid-onestep-film.has-asset-frame.layout-2 .strip-slot {
+  aspect-ratio: 675 / 465;
+}
+
+/* The reference-inspired OneStep frame has a taller camera header and true 35mm windows. */
+.strip.frame-polaroid-onestep-film.has-asset-frame.layout-3 {
+  width: 180px;
+  aspect-ratio: 780 / 2014;
+  padding: 26.56% 22.44% 9.88% 26.28% !important;
+}
+.strip.frame-polaroid-onestep-film.has-asset-frame.layout-3 .strip-photos {
+  gap: 2.35%;
+}
+.strip.frame-polaroid-onestep-film.has-asset-frame.layout-3 .strip-slot {
+  aspect-ratio: 400 / 407;
+}
+
+.strip.frame-polaroid-onestep-film.has-asset-frame.layout-4 {
+  width: 175px;
+  aspect-ratio: 1024 / 1536;
+  padding: 21.09% 37.11% 3.13% 37.11% !important;
+}
+.strip.frame-polaroid-onestep-film.has-asset-frame.layout-4 .strip-photos {
+  gap: 3.71%;
+}
+.strip.frame-polaroid-onestep-film.has-asset-frame.layout-4 .strip-slot {
+  aspect-ratio: 264 / 263;
+}
+
+.strip.frame-onestep-burgundy-bloom.has-asset-frame.layout-3 {
+  width: 180px;
+  aspect-ratio: 844 / 1864;
+  padding: 0 !important;
+  display: block;
+}
+
+/* Burgundy Bloom has individual transparent overlays for every supported layout. */
+.strip.frame-onestep-burgundy-bloom.has-asset-frame.layout-1 { width: 216px; aspect-ratio: 954 / 1648; padding: 0 !important; display: block; }
+.strip.frame-onestep-burgundy-bloom.has-asset-frame.layout-2 { width: 205px; aspect-ratio: 941 / 1672; padding: 0 !important; display: block; }
+.strip.frame-onestep-burgundy-bloom.has-asset-frame.layout-4 { width: 270px; aspect-ratio: 1024 / 1536; padding: 0 !important; display: block; }
+.strip.frame-onestep-burgundy-bloom.has-asset-frame.layout-6 { width: 270px; aspect-ratio: 1024 / 1536; padding: 0 !important; display: block; }
+.strip.frame-onestep-burgundy-bloom.has-asset-frame.layout-8 { width: 230px; aspect-ratio: 844 / 1863; padding: 0 !important; display: block; }
+.strip.frame-onestep-burgundy-bloom.has-asset-frame.layout-9 { width: 270px; aspect-ratio: 1024 / 1536; padding: 0 !important; display: block; }
+
+.strip.has-asset-frame.layout-4 {
+  width: 175px;
+  aspect-ratio: 700 / 2300;
+  padding: 6.09% 8.57% 12.61% 8.57% !important;
+}
+.strip.has-asset-frame.layout-4 .strip-photos {
+  gap: 1.30%;
+}
+.strip.has-asset-frame.layout-4 .strip-slot {
+  aspect-ratio: 580 / 445;
+}
+
+.strip.has-asset-frame.layout-4-grid {
+  width: 250px;
+  aspect-ratio: 1160 / 1320;
+  padding: 6.06% 5.60% 9.85% 5.60% !important;
+}
+.strip.has-asset-frame.layout-4-grid .strip-photos {
+  grid-template-columns: repeat(2, 1fr);
+  gap: 2.27%;
+}
+.strip.has-asset-frame.layout-4-grid .strip-slot {
+  aspect-ratio: 500 / 540;
+}
+
+.strip.has-asset-frame.layout-6 {
+  width: 250px;
+  aspect-ratio: 1160 / 1750;
+  padding: 4.57% 5.60% 7.43% 5.60% !important;
+}
+.strip.has-asset-frame.layout-6 .strip-photos {
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.71%;
+}
+.strip.has-asset-frame.layout-6 .strip-slot {
+  aspect-ratio: 500 / 493.33;
+}
+
+.strip.has-asset-frame.layout-8 {
+  width: 250px;
+  aspect-ratio: 1160 / 2150;
+  padding: 4.19% 5.60% 6.51% 5.60% !important;
+}
+.strip.has-asset-frame.layout-8 .strip-photos {
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.39%;
+}
+.strip.has-asset-frame.layout-8 .strip-slot {
+  aspect-ratio: 500 / 457.5;
+}
+
+.strip.has-asset-frame.layout-9 {
+  width: 290px;
+  aspect-ratio: 1350 / 1480;
+  padding: 5.41% 4.44% 8.78% 4.44% !important;
+}
+.strip.has-asset-frame.layout-9 .strip-photos {
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.69%;
+}
+.strip.has-asset-frame.layout-9 .strip-slot {
+  aspect-ratio: 393.33 / 406.67;
+}
+
+/* Ensure clean slot border for asset frames so photos fit snugly inside cutout windows */
+.strip.has-asset-frame .strip-slot {
+  border: 2px solid rgba(255, 255, 255, 0.4) !important;
+  border-radius: 2px !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.strip.has-asset-frame .strip-slot.empty-slot {
+  border: 1.5px dashed rgba(255, 255, 255, 0.8) !important;
+  background: rgba(0, 0, 0, 0.25) !important;
+  color: #fff !important;
+}
+
+/* Pixel-positioned raster frames must expose their full border box as the
+   percentage coordinate system; decorative borders/padding already live in PNG. */
+.strip.has-positioned-asset.has-asset-frame,
+.strip.has-positioned-asset.has-positioned-artwork {
+  padding: 0 !important;
+  border: 0 !important;
+}
+
 /* ================== FILTER PRESETS ================== */
 .filter-none { filter: none; }
 .filter-k-beauty { filter: brightness(1.06) contrast(1.03) saturate(1.15); }
@@ -2139,28 +3498,124 @@ body {
 .filter-warm { filter: sepia(0.2) saturate(1.3) hue-rotate(-8deg) brightness(1.04); }
 .filter-cyber { filter: saturate(1.45) hue-rotate(240deg) contrast(1.15); }
 
+/* ================== TREND RADAR 2026 FRAME PRESETS ================== */
+.frame-trend-glitchy-glam, .strip.frame-trend-glitchy-glam { background: linear-gradient(135deg, #170724 0 25%, #F72585 25% 28%, #4CC9F0 28% 52%, #170724 52% 56%, #7B2CBF 56%) !important; color: #fff !important; border: 3px solid #F72585; }
+.frame-trend-cool-blue, .strip.frame-trend-cool-blue { background: linear-gradient(135deg, #EFFFFF, #A5D8FF 50%, #DAF3FF) !important; color: #164E63 !important; border: 2px solid #fff; box-shadow: inset 0 0 14px #fff; }
+.frame-trend-poetcore, .strip.frame-trend-poetcore { background: #F5F0E7 repeating-linear-gradient(0deg, transparent 0 21px, rgba(117, 84, 54, .16) 22px 23px) !important; color: #563D2A !important; border: 2px solid #9D7652; }
+.frame-trend-opera-night, .strip.frame-trend-opera-night { background: radial-gradient(circle at 50% 5%, #CFA755, #6D0D23 42%, #28030D 100%) !important; color: #FFE7A4 !important; border: 4px double #D9B76B; }
+.frame-trend-neodeco, .strip.frame-trend-neodeco { background: linear-gradient(135deg, #111C25, #29404C) !important; color: #F6D675 !important; border: 3px double #F6D675; }
+.frame-trend-funhaus, .strip.frame-trend-funhaus { background: conic-gradient(from 45deg, #F8D448, #F04E43, #2E6DD8, #F8D448) !important; color: #241509 !important; border: 3px solid #fff; }
+.frame-trend-jelly-pop, .strip.frame-trend-jelly-pop { background: radial-gradient(circle at 25% 20%, #fff8, transparent 13%), linear-gradient(135deg, #FF86B4, #B994FF, #71D7FF) !important; color: #fff !important; }
+.frame-trend-wilderkind, .strip.frame-trend-wilderkind { background: #315D3D radial-gradient(#B4D58A 1px, transparent 1px) !important; background-size: 12px 12px !important; color: #F1F2D0 !important; }
+.frame-trend-aliencore, .strip.frame-trend-aliencore { background: #B7F255 radial-gradient(circle, #fff 0 6%, transparent 7%) !important; background-size: 18px 18px !important; color: #17230C !important; }
+.frame-trend-2016-rewind, .strip.frame-trend-2016-rewind { background: linear-gradient(135deg, #58C8E8, #B668DD 50%, #FF8AB2) !important; color: #fff !important; border: 2px solid #fff; }
+.frame-trend-coquette-lace, .strip.frame-trend-coquette-lace { background: #FFF0F5 repeating-linear-gradient(45deg, #F6B8CF 0 2px, transparent 2px 10px) !important; color: #9E355B !important; border: 3px dotted #E990B4; }
+.frame-trend-dark-academia, .strip.frame-trend-dark-academia { background: linear-gradient(135deg, #231811, #5B3824) !important; color: #EAD6B8 !important; border: 3px solid #B08A58; }
+.frame-trend-frutiger-aero, .strip.frame-trend-frutiger-aero { background: linear-gradient(135deg, #8EF3FF, #20BFE3 48%, #1E91D4) !important; color: #043A60 !important; border: 2px solid #fff; }
+.frame-trend-shoujo-manga, .strip.frame-trend-shoujo-manga { background: #FFE0EF radial-gradient(#F59AC2 1px, transparent 1px) !important; background-size: 9px 9px !important; color: #A4185B !important; }
+.frame-trend-racing-core, .strip.frame-trend-racing-core { background: repeating-conic-gradient(#111 0 25%, #fff 0 50%) 0 / 22px 22px, #E53636 !important; color: #fff !important; border: 5px solid #E53636; }
+.frame-trend-mystic-tarot, .strip.frame-trend-mystic-tarot { background: radial-gradient(circle at 50% 35%, #6F4BB4, #21113D 62%) !important; color: #FFD979 !important; border: 2px solid #C5A7FF; }
+.frame-trend-cafe-camcorder, .strip.frame-trend-cafe-camcorder { background: #A76A45 repeating-linear-gradient(0deg, #0000 0 8px, #fff2 9px 10px) !important; color: #FFF6E8 !important; border: 3px solid #4C2B20; }
+.frame-trend-chrome-heart, .strip.frame-trend-chrome-heart { background: linear-gradient(135deg, #8B95A7, #FFF 32%, #AEB7C7 50%, #FFF 72%, #8892A2) !important; color: #242B38 !important; border: 2px solid #fff; }
+
+/* ================== VIETNAM HOLIDAYS & DESTINATIONS ================== */
+.frame-vn-tet-nguyen-dan, .strip.frame-vn-tet-nguyen-dan { background: #B3132B radial-gradient(circle at 20% 20%, #F5CF4C 0 3%, transparent 4%) !important; background-size: 24px 24px !important; color: #FFE9A7 !important; border: 3px solid #F5CF4C; }
+.frame-vn-xuan-que-huong, .strip.frame-vn-xuan-que-huong, .frame-vn-da-lat-flower, .strip.frame-vn-da-lat-flower { background: #F9CBD7 radial-gradient(#E97B9D 1.5px, transparent 1.5px) !important; background-size: 12px 12px !important; color: #8B2851 !important; }
+.frame-vn-gio-to-hung-vuong, .strip.frame-vn-gio-to-hung-vuong, .frame-vn-giong-festival, .strip.frame-vn-giong-festival { background: linear-gradient(135deg, #684125, #C29A47 55%, #50301D) !important; color: #FFF0B1 !important; border: 3px double #FFF0B1; }
+.frame-vn-reunification-day, .strip.frame-vn-reunification-day, .frame-vn-national-day, .strip.frame-vn-national-day, .frame-vn-august-revolution, .strip.frame-vn-august-revolution { background: #DA251D !important; color: #FFF200 !important; border: 3px solid #FFF200; box-shadow: inset 0 0 0 5px #DA251D, inset 0 0 0 7px #FFF200; }
+.frame-vn-labor-day, .strip.frame-vn-labor-day { background: repeating-linear-gradient(45deg, #C81E35 0 10px, #F6C73C 10px 14px) !important; color: #fff !important; }
+.frame-vn-dien-bien, .strip.frame-vn-dien-bien, .frame-vn-army-day, .strip.frame-vn-army-day { background: #456B34 repeating-linear-gradient(135deg, #0000 0 9px, #B9C87544 9px 11px) !important; color: #FFF0A8 !important; border: 2px solid #B9C875; }
+.frame-vn-ho-chi-minh-birthday, .strip.frame-vn-ho-chi-minh-birthday { background: linear-gradient(135deg, #B7CC8A, #5E824A) !important; color: #173819 !important; border: 3px solid #F5D977; }
+.frame-vn-childrens-day, .strip.frame-vn-childrens-day { background: linear-gradient(135deg, #55B7E8, #F4D954, #F58A9E) !important; color: #fff !important; border: 3px solid #fff; }
+.frame-vn-family-day, .strip.frame-vn-family-day { background: #F59F4F radial-gradient(circle at 20% 20%, #FFF4B4 0 7%, transparent 8%) !important; color: #60330F !important; }
+.frame-vn-martyrs-day, .strip.frame-vn-martyrs-day { background: linear-gradient(135deg, #43161C, #9F3B47) !important; color: #FFE4C7 !important; border: 2px solid #D69B70; }
+.frame-vn-mid-autumn, .strip.frame-vn-mid-autumn { background: #172B5E radial-gradient(circle at 80% 18%, #FFE172 0 13%, transparent 14%) !important; color: #FFF4BA !important; border: 3px solid #D88B2B; }
+.frame-vn-womens-day, .strip.frame-vn-womens-day { background: linear-gradient(135deg, #FFE5EE, #E98BAA) !important; color: #7F1F46 !important; border: 2px solid #fff; }
+.frame-vn-teachers-day, .strip.frame-vn-teachers-day { background: #315D77 repeating-linear-gradient(0deg, #0000 0 13px, #fff2 14px 15px) !important; color: #F9EDC7 !important; }
+.frame-vn-hue-festival, .strip.frame-vn-hue-festival { background: linear-gradient(135deg, #39204E, #986EB0 50%, #E4C66B) !important; color: #fff !important; border: 3px double #E4C66B; }
+.frame-vn-hoi-an-lantern-fest, .strip.frame-vn-hoi-an-lantern-fest, .frame-vn-hoi-an, .strip.frame-vn-hoi-an { background: #7F351B radial-gradient(circle at 20% 20%, #F6C453 0 5%, transparent 6%) !important; background-size: 24px 24px !important; color: #FFE6A4 !important; }
+.frame-vn-hanoi, .strip.frame-vn-hanoi { background: linear-gradient(135deg, #4E3025, #C18453 55%, #2E1B17) !important; color: #FFF2D2 !important; }
+.frame-vn-ha-giang, .strip.frame-vn-ha-giang, .frame-vn-mai-chau, .strip.frame-vn-mai-chau, .frame-vn-ninh-binh, .strip.frame-vn-ninh-binh { background: linear-gradient(180deg, #97C66A, #466C3B 66%, #E4C87F 67%) !important; color: #fff !important; }
+.frame-vn-sapa, .strip.frame-vn-sapa { background: #78964B repeating-linear-gradient(0deg, #0000 0 10px, #E4C565 11px 13px) !important; color: #fff !important; }
+.frame-vn-ha-long, .strip.frame-vn-ha-long, .frame-vn-cat-ba, .strip.frame-vn-cat-ba { background: linear-gradient(135deg, #51D3D1, #148DA8 55%, #0C5870) !important; color: #EFFFFF !important; }
+.frame-vn-moc-chau, .strip.frame-vn-moc-chau { background: #D9ECD3 radial-gradient(#fff 0 5%, transparent 6%) !important; background-size: 20px 20px !important; color: #3C6B46 !important; }
+.frame-vn-phong-nha, .strip.frame-vn-phong-nha { background: radial-gradient(circle at 50% 0%, #7DB596, #314B42 65%, #172C2A) !important; color: #EBE7C6 !important; }
+.frame-vn-hue, .strip.frame-vn-hue { background: linear-gradient(135deg, #412454, #704E8F 56%, #D5B04B) !important; color: #FFF0B9 !important; border: 3px double #D5B04B; }
+.frame-vn-da-nang, .strip.frame-vn-da-nang, .frame-vn-nha-trang, .strip.frame-vn-nha-trang, .frame-vn-quy-nhon, .strip.frame-vn-quy-nhon { background: linear-gradient(180deg, #63D6ED 0 42%, #F7D27C 43% 54%, #1689C6 55%) !important; color: #fff !important; }
+.frame-vn-ly-son, .strip.frame-vn-ly-son, .frame-vn-con-dao, .strip.frame-vn-con-dao { background: linear-gradient(135deg, #4BBDAE, #1E6664 65%, #F7D882 66%) !important; color: #fff !important; }
+.frame-vn-phu-yen, .strip.frame-vn-phu-yen { background: linear-gradient(135deg, #F0C74B, #80BD6A 52%, #398BC1) !important; color: #614514 !important; }
+.frame-vn-mui-ne, .strip.frame-vn-mui-ne { background: linear-gradient(135deg, #E58C35, #F7CF78 55%, #48B7D0) !important; color: #fff !important; }
+.frame-vn-da-lat, .strip.frame-vn-da-lat { background: linear-gradient(135deg, #A9C3A6, #618B69 62%, #415A49) !important; color: #FFFBEA !important; }
+.frame-vn-ho-chi-minh-city, .strip.frame-vn-ho-chi-minh-city { background: linear-gradient(135deg, #E76F51, #F4B15C 48%, #304D7B) !important; color: #fff !important; }
+.frame-vn-vung-tau, .strip.frame-vn-vung-tau { background: linear-gradient(180deg, #6ED3E2, #379CB1 57%, #F8D79B 58%) !important; color: #fff !important; }
+.frame-vn-can-tho, .strip.frame-vn-can-tho, .frame-vn-chau-doc, .strip.frame-vn-chau-doc { background: #8E9F46 repeating-linear-gradient(90deg, #0000 0 14px, #F1D46A55 15px 17px) !important; color: #fff !important; }
+.frame-vn-phu-quoc, .strip.frame-vn-phu-quoc { background: linear-gradient(135deg, #F5D775, #1EAD9C 55%, #0D6B80) !important; color: #fff !important; }
+
 /* ================== RESPONSIVE ================== */
 @media (max-width: 1060px) {
-  .studio-workspace {
-    grid-template-columns: 1fr;
+  .studio-workspace,
+  .studio-workspace-secondary {
+    width: 100%;
+    max-width: 100vw;
   }
-  .preview-column {
+  .studio-workspace {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .stage-column,
+  .layout-column,
+  .frame-column {
+    min-width: 0;
+    width: 100%;
     position: static;
+  }
+  .camera-card,
+  .photo-pool-card,
+  .strip-stage-card,
+  .strip-control-card,
+  .side-picker-card,
+  .tab-pane,
+  .sub-section,
+  .strip-viewport {
+    min-width: 0;
+    max-width: 100%;
+  }
+  .layout-grid-chips {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 }
 
 @media (max-width: 640px) {
+  html,
+  body {
+    max-width: 100%;
+    overflow-x: hidden;
+  }
   .studio-slogan {
     display: none;
   }
   .header-container {
     padding: 8px 14px;
   }
-  .studio-workspace {
+  .studio-workspace,
+  .studio-workspace-secondary {
     padding: 0 10px;
+  }
+  .studio-workspace {
     gap: 14px;
   }
+  .layout-grid-chips {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .frame-swatches-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .strip-card-header {
+    align-items: flex-start;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
   .camera-screen {
-    height: 52vh;
+    height: auto;
+    aspect-ratio: 16 / 9;
   }
 }
